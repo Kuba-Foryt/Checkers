@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/style.css" />
+    <title>Droughts</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <section class="title"></section>
+      </header>
+      <article class="table">
+        <section class="player1">
+          <section class="player1__name" data-name1></section>
+          <section class="player1__timer" data-counter1></section>
+        </section>
+        <section class="board" data-board></section>
+        <section class="player2">
+          <section class="player2__name" data-name2></section>
+          <section class="player2__timer" data-counter2></section>
+        </section>
+      </article>
+      <section class="boardBottom"></section>
+      <article class="starter__modal" data-starter-modal>
+        <section class="starter__modal__content">
+          <h2 class="starter__modal__text" data-starter-modal-header>
+            CHECKERS
+          </h2>
+          <section class="starter__modal__form__container" data-starter-modal-container>
+            <form class="starter__modal__form">
+            <input class="starter__modal__input__player1" data-starter-player1 type="text" placeholder="First player's name">
+            <input class="starter__modal__input__player2" data-starter-player2 type="text" placeholder="Second player's name">
+          </section> 
+          <button class="starter__modal__button" data-starter-modal-button>START GAME!</button>  
+        </section>
+      </article>
+      <article class="endgame__modal endgame__modal--hidden" data-endgame-modal>
+        <section class="endgame__modal__content">
+          <h2 class="endgame__modal__text" data-endgame-modal-header>
+            YOU WON!
+          </h2>
+          <button class="endgame__modal__button" data-endgame-modal-button>PLAY AGAIN!</button>
+        </section>
+      </article>
+    </main>
+    <script type="module" src="./js/Game.js"></script>
+  </body>
+</html>
