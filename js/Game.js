@@ -4,7 +4,7 @@ import { Piece } from "./Piece.js";
 import { Timer } from "./Timer.js";
 
 class Game extends UI {
-  #config = {
+  config = {
     rows: 8,
     cols: 8,
     number: 64,
@@ -12,7 +12,7 @@ class Game extends UI {
   };
 
   #board = null;
-  #cells = [];
+  cells = [];
   #cellsElements = null;
   #cellsElement = [];
   #cellsToJump = [];
@@ -42,8 +42,8 @@ class Game extends UI {
     option: null,
   };
 
-  #redPieces = [];
-  #blackPieces = [];
+  redPieces = [];
+  blackPieces = [];
   #pieces = [];
   #pieceCanJump = [];
 
@@ -53,19 +53,19 @@ class Game extends UI {
   #redAmount = 12;
   #turn = true;
 
-  #redPlayer = null;
-  #blackPlayer = null;
-  #redCounter = null;
-  #blackCounter = null;
+  redPlayer = null;
+  blackPlayer = null;
+  redCounter = null;
+  blackCounter = null;
 
   #starterModal = null;
   #starterBtn = null;
-  #starterPlayer1 = null;
-  #starterPlayer2 = null;
-  #player1Name = null;
-  #player2Name = null;
-  #name1 = null;
-  #name2 = null;
+  starterPlayer1 = null;
+  starterPlayer2 = null;
+  player1Name = null;
+  player2Name = null;
+  name1 = null;
+  name2 = null;
 
   #endgameModal = null;
   #endgameModalText = null;
@@ -77,30 +77,21 @@ class Game extends UI {
   initializeGame() {
     this.#handleElements();
     this.#newGame();
-    this.#colorBoard();
   }
 
   #handleElements() {
     this.#board = this.getElement(this.UISelectors.board);
-    this.#redPlayer = this.getElement(this.UISelectors.counter1);
-    this.#blackPlayer = this.getElement(this.UISelectors.counter2);
-    this.#name1 = this.getElement(this.UISelectors.name1);
-    this.#name2 = this.getElement(this.UISelectors.name2);
+    this.redPlayer = this.getElement(this.UISelectors.counter1);
+    this.blackPlayer = this.getElement(this.UISelectors.counter2);
+    this.name1 = this.getElement(this.UISelectors.name1);
+    this.name2 = this.getElement(this.UISelectors.name2);
     this.#starterModal = this.getElement(this.UISelectors.starterModal);
-    this.#starterPlayer1 = this.getElement(
-      this.UISelectors.starterModalPlayer1
-    );
-    this.#starterPlayer2 = this.getElement(
-      this.UISelectors.starterModalPlayer2
-    );
+    this.starterPlayer1 = this.getElement(this.UISelectors.starterModalPlayer1);
+    this.starterPlayer2 = this.getElement(this.UISelectors.starterModalPlayer2);
     this.#starterBtn = this.getElement(this.UISelectors.starterModalBtn);
     this.#endgameModal = this.getElement(this.UISelectors.endgameModal);
     this.#endgameModalText = this.getElement(this.UISelectors.endgameModalText);
     this.#endgameModalBtn = this.getElement(this.UISelectors.endgameModalBtn);
-
-    // console.log(this);
-    // this.#cellsElements = this.getElements(this.UISelectors.cell);
-    // this.#cellsElements = this.getElement(this.UISelectors.cell);
   }
 
   #newGame() {
@@ -108,26 +99,28 @@ class Game extends UI {
     this.#renderBoard();
     this.#colorBoard();
     this.#generateTimers();
-    this.#renderTimers();
+    this.redCounter.renderTimers.bind(this)();
     this.#generateRedPieces();
     this.#generateBlackPieces();
     this.#renderRedPieces();
     this.#renderBlackPieces();
     this.#addKingCreationCells();
-
     this.#starterBtn.addEventListener("click", this.#startGame.bind(this));
+    // this.createCustomKings();
   }
 
   #startGame(e) {
     e.preventDefault();
-    // this.#renderTimers();
-    this.#updateNames();
+    this.redCounter.updateNames.bind(this)();
     this.#starterModal.classList.add("starter__modal--hidden");
     this.#cellsElements = this.getElements(this.UISelectors.cell);
     this.#addBlackPiecesEventListeners();
-    this.#redCountdown = setInterval(this.#updateRedCountdown.bind(this), 1000);
+    this.#redCountdown = setInterval(
+      this.redCounter.updateRedCountdown.bind(this),
+      1000
+    );
     this.#blackCountdown = setInterval(
-      this.#updateBlackCountdown.bind(this),
+      this.blackCounter.updateBlackCountdown.bind(this),
       1000
     );
 
@@ -143,26 +136,26 @@ class Game extends UI {
 
   #restartGame(e) {
     e.preventDefault();
-    this.#cells = [];
-    this.#redCounter = null;
-    this.#blackCounter = null;
+    this.cells = [];
+    this.redCounter = null;
+    this.blackCounter = null;
     this.#generateCells();
     this.#renderBoard();
     this.#colorBoard();
     this.#generateTimers();
-    this.#renderTimers();
+    this.redCounter.renderTimers.bind(this)();
+    this.redCounter.updateNames.bind(this)();
     this.#generateRedPieces();
     this.#generateBlackPieces();
     this.#renderRedPieces();
     this.#renderBlackPieces();
     this.#addKingCreationCells();
-    this.createCustomKings();
     this.#turn = true;
     this.#endgameModal.classList.add("endgame__modal--hidden");
     this.#cellsElements = this.getElements(this.UISelectors.cell);
     this.#addBlackPiecesEventListeners();
     this.#blackCountdown = setInterval(
-      this.#updateBlackCountdown.bind(this),
+      this.blackCounter.updateBlackCountdown.bind(this),
       1000
     );
 
@@ -170,78 +163,33 @@ class Game extends UI {
   }
 
   #generateCells() {
-    this.#cells.length = 0;
-    this.#cells.number = 1;
-    for (let n = 0; n < this.#config.number; n++) {
-      this.#cells.push(new Cell(this.#cells.number));
-      this.#cells.number++;
+    this.cells.length = 0;
+    this.cells.number = 1;
+    for (let n = 0; n < this.config.number; n++) {
+      this.cells.push(new Cell(this.cells.number));
+      this.cells.number++;
     }
   }
 
-  #updateRedCountdown() {
-    this.#redCounter.time--;
-    this.#redCounter.minutes = Math.floor(this.#redCounter.time / 60);
-    this.#redCounter.time % 60 > 9
-      ? (this.#redCounter.seconds = this.#redCounter.time % 60)
-      : (this.#redCounter.seconds = `0${this.#redCounter.time % 60}`);
-    this.#redPlayer.firstChild.innerHTML = `${this.#redCounter.minutes}
-  : ${this.#redCounter.seconds}`;
-    this.#redCounter.time < 60
-      ? (this.#redPlayer.firstChild.style.color = "red")
-      : (this.#redPlayer.firstChild.style.color = "black");
-    this.#checkIfWin();
-  }
-
-  #updateBlackCountdown() {
-    this.#blackCounter.time--;
-    this.#blackCounter.minutes = Math.floor(this.#blackCounter.time / 60);
-    this.#blackCounter.time % 60 > 9
-      ? (this.#blackCounter.seconds = this.#blackCounter.time % 60)
-      : (this.#blackCounter.seconds = `0${this.#blackCounter.time % 60}`);
-    this.#blackPlayer.firstChild.innerHTML = `${this.#blackCounter.minutes}
-  : ${this.#blackCounter.seconds}`;
-    this.#blackCounter.time < 60
-      ? (this.#blackPlayer.firstChild.style.color = "red")
-      : (this.#blackPlayer.firstChild.style.color = "black");
-
-    this.#checkIfWin();
-  }
-  #updateNames() {
-    this.#player1Name = this.#starterPlayer1.value;
-    !this.#player1Name ? (this.#player1Name = "PLAYER 1") : this.#player1Name;
-    this.#player2Name = this.#starterPlayer2.value;
-    !this.#player2Name ? (this.#player2Name = "PLAYER 2") : this.#player2Name;
-    this.#name2.innerHTML = this.#player1Name;
-    this.#name1.innerHTML = this.#player2Name;
-  }
   #generateTimers() {
-    this.#redCounter = new Timer();
-    this.#blackCounter = new Timer();
+    this.redCounter = new Timer();
+    this.blackCounter = new Timer();
 
-    this.#redPlayer.insertAdjacentHTML(
+    this.redPlayer.insertAdjacentHTML(
       "beforeend",
-      this.#redCounter.createElement()
+      this.redCounter.createElement()
     );
-    this.#blackPlayer.insertAdjacentHTML(
+    this.blackPlayer.insertAdjacentHTML(
       "beforeend",
-      this.#blackCounter.createElement()
+      this.blackCounter.createElement()
     );
-  }
-
-  #renderTimers() {
-    this.#name1.innerHTML = "PLAYER 2";
-    this.#name2.innerHTML = "PLAYER 1";
-    this.#redPlayer.firstChild.innerHTML = `${this.#redCounter.minutes}
-    : 0${this.#redCounter.seconds}`;
-    this.#blackPlayer.firstChild.innerHTML = `${this.#blackCounter.minutes}
-    : 0${this.#blackCounter.seconds}`;
   }
 
   #renderBoard() {
     while (this.#board.firstChild) {
       this.#board.removeChild(this.#board.lastChild);
     }
-    this.#cells.forEach((cell) => {
+    this.cells.forEach((cell) => {
       this.#board.insertAdjacentHTML("beforeend", cell.createElement());
       cell.element = cell.getElement(cell.selector);
     });
@@ -250,8 +198,8 @@ class Game extends UI {
   #colorBoard() {
     let brownCell = 1;
 
-    while (brownCell < this.#config.number) {
-      const cell = this.#cells[brownCell];
+    while (brownCell < this.config.number) {
+      const cell = this.cells[brownCell];
       cell.isBrown = true;
       cell.brownCell();
       brownCell += 2;
@@ -269,25 +217,83 @@ class Game extends UI {
     }
   }
 
-  createCustomKings() {
-    this.#cells[44].element.firstChild.classList.add("blackKing");
-    this.#cells[46].element.firstChild.classList.add("blackKing");
-    this.#cells[19].element.firstChild.classList.add("redKing");
-  }
-
   #addKingCreationCells() {
     const kingCells = [1, 3, 5, 7, 56, 58, 60, 62];
 
     for (let i = 0; i < 4; i++) {
-      let cell = this.#cells[kingCells[i]];
+      let cell = this.cells[kingCells[i]];
       cell.element.classList.add("blackKingCell");
     }
     for (let i = 4; i < 8; i++) {
-      let cell = this.#cells[kingCells[i]];
+      let cell = this.cells[kingCells[i]];
       cell.element.classList.add("redKingCell");
     }
+  }
 
-    // this.createCustomKings();
+  #generateRedPieces() {
+    this.redPieces.length = 0;
+    this.redPieces.number = 2;
+    for (let n = 0; n < this.config.pieces; n += 2) {
+      this.redPieces.push(new Piece(this.redPieces.number));
+      if (this.redPieces.number == 8) {
+        this.redPieces.number--;
+      } else if (this.redPieces.number == 15) {
+        this.redPieces.number++;
+      }
+      this.redPieces.number += 2;
+    }
+    this.#pieces.push(...this.redPieces);
+  }
+
+  #generateBlackPieces() {
+    this.blackPieces.length = 0;
+    this.blackPieces.number = 41;
+    for (let n = 41; n < this.config.number; n += 2) {
+      this.blackPieces.push(new Piece(this.blackPieces.number));
+      if (this.blackPieces.number == 56) {
+        this.blackPieces.number--;
+      } else if (this.blackPieces.number == 47) {
+        this.blackPieces.number++;
+      }
+      this.blackPieces.number += 2;
+    }
+    this.#pieces.push(...this.blackPieces);
+  }
+
+  #renderRedPieces() {
+    this.redPieces.forEach((piece) => {
+      const index = piece["n"];
+      piece.isRed = true;
+      this.cells[index - 1].element.insertAdjacentHTML(
+        "beforeend",
+        piece.createRedPieceElement()
+      );
+      this.cells[index - 1].hasPiece = true;
+      this.cells[index - 1].hasRed = true;
+      this.cells[index - 1].element.classList.add("hasPiece");
+      piece.element = piece.getElement(piece.selector);
+    });
+  }
+
+  #renderBlackPieces() {
+    this.blackPieces.forEach((piece) => {
+      const index = piece["n"];
+      piece.isBlack = true;
+      this.cells[index - 1].element.insertAdjacentHTML(
+        "beforeend",
+        piece.createBlackPieceElement()
+      );
+      this.cells[index - 1].hasPiece = true;
+      this.cells[index - 1].hasBlack = true;
+      this.cells[index - 1].element.classList.add("hasPiece");
+      piece.element = piece.getElement(piece.selector);
+    });
+  }
+
+  createCustomKings() {
+    this.cells[44].element.firstChild.classList.add("blackKing");
+    this.cells[46].element.firstChild.classList.add("blackKing");
+    this.cells[19].element.firstChild.classList.add("redKing");
   }
 
   #addBlackPiecesEventListeners() {
@@ -317,65 +323,6 @@ class Game extends UI {
     });
   }
 
-  #generateRedPieces() {
-    this.#redPieces.length = 0;
-    this.#redPieces.number = 2;
-    for (let n = 0; n < this.#config.pieces; n += 2) {
-      this.#redPieces.push(new Piece(this.#redPieces.number));
-      if (this.#redPieces.number == 8) {
-        this.#redPieces.number--;
-      } else if (this.#redPieces.number == 15) {
-        this.#redPieces.number++;
-      }
-      this.#redPieces.number += 2;
-    }
-    this.#pieces.push(...this.#redPieces);
-  }
-
-  #generateBlackPieces() {
-    this.#blackPieces.length = 0;
-    this.#blackPieces.number = 41;
-    for (let n = 41; n < this.#config.number; n += 2) {
-      this.#blackPieces.push(new Piece(this.#blackPieces.number));
-      if (this.#blackPieces.number == 56) {
-        this.#blackPieces.number--;
-      } else if (this.#blackPieces.number == 47) {
-        this.#blackPieces.number++;
-      }
-      this.#blackPieces.number += 2;
-    }
-    this.#pieces.push(...this.#blackPieces);
-  }
-
-  #renderRedPieces() {
-    this.#redPieces.forEach((piece) => {
-      const index = piece["n"];
-      piece.isRed = true;
-      this.#cells[index - 1].element.insertAdjacentHTML(
-        "beforeend",
-        piece.createRedPieceElement()
-      );
-      this.#cells[index - 1].hasPiece = true;
-      this.#cells[index - 1].hasRed = true;
-      this.#cells[index - 1].element.classList.add("hasPiece");
-      piece.element = piece.getElement(piece.selector);
-    });
-  }
-  #renderBlackPieces() {
-    this.#blackPieces.forEach((piece) => {
-      const index = piece["n"];
-      piece.isBlack = true;
-      this.#cells[index - 1].element.insertAdjacentHTML(
-        "beforeend",
-        piece.createBlackPieceElement()
-      );
-      this.#cells[index - 1].hasPiece = true;
-      this.#cells[index - 1].hasBlack = true;
-      this.#cells[index - 1].element.classList.add("hasPiece");
-      piece.element = piece.getElement(piece.selector);
-    });
-  }
-
   #handleCellClick = (e) => {
     if (this.#selectedPiece.target) {
       this.#selectedPiece.target.removeEventListener(
@@ -392,12 +339,6 @@ class Game extends UI {
       );
     }
 
-    // if (this.#pieceCanJump.length) {
-    //   this.#pieceCanJump.forEach((element) =>
-    //     element.classList.remove("canJump")
-    //   );
-    // }
-
     if (this.#turn) {
       this.#addBlackPiecesEventListeners();
     } else if (!this.#turn) {
@@ -411,7 +352,6 @@ class Game extends UI {
     }
 
     this.#cleanMemoryClick();
-
     this.#pieceCanJump = [];
     this.#checkIfAnyJumpIsPossible();
 
@@ -422,7 +362,7 @@ class Game extends UI {
       10
     );
 
-    this.#selectedPiece.cell = this.#cells[this.#selectedPiece.index - 1];
+    this.#selectedPiece.cell = this.cells[this.#selectedPiece.index - 1];
     this.#selectedPiece.target.classList.add("selected");
     console.log(this.#selectedPiece.target);
 
@@ -438,18 +378,14 @@ class Game extends UI {
 
   #checkIfAnyJumpIsPossible() {
     let piecesToCheck = [];
-    // console.log(this);
     if (this.#turn) {
       piecesToCheck = this.#black;
     } else if (!this.#turn) {
       piecesToCheck = this.#red;
     }
 
-    console.log(piecesToCheck);
-
     for (let i = 0; i < piecesToCheck.length; i++) {
       const index = parseInt(piecesToCheck[i].getAttribute("data-n"), 10);
-      // console.log(piecesToCheck);
 
       if (
         piecesToCheck[i].classList.contains("blackKing") ||
@@ -458,8 +394,6 @@ class Game extends UI {
         this.#checkPossibleKingJumpHandler(index);
         if (this.#cellsToJump.length) {
           this.#pieceCanJump.push(piecesToCheck[i]);
-          console.log(this.#pieceCanJump);
-          // piecesToCheck[i].classList.add("canJump");
         }
         this.#cellsToJump = [];
         this.#cellsToCheck = [];
@@ -469,20 +403,15 @@ class Game extends UI {
         this.#checkIfAnyPossiblePieceJump(index);
         if (this.#cellsToJump.length) {
           this.#pieceCanJump.push(piecesToCheck[i]);
-          // piecesToCheck[i].classList.add("canJump");
-          console.log(this.#pieceCanJump);
         }
         this.#cellsToJump = [];
         this.#cellsToCheck = [];
-        // this.#checkPossibleJump(this.#selectedPiece.index);
       }
     }
   }
 
   #checkPossibleKingJump(index) {
     this.#checkPossibleKingJumpHandler(index);
-
-    console.log(index);
 
     this.#cellsToJump.forEach((element) =>
       element.element.classList.add("possibleJump")
@@ -554,13 +483,13 @@ class Game extends UI {
 
     for (let i = 0; i < kingJumpBoard.length; i++) {
       kingJumpBoard[i] > 0 && kingJumpBoard[i] < 63
-        ? this.#cellsToJumpKing.push(this.#cells[kingJumpBoard[i]])
-        : this.#cellsToJumpKing.push(this.#cells[0]);
+        ? this.#cellsToJumpKing.push(this.cells[kingJumpBoard[i]])
+        : this.#cellsToJumpKing.push(this.cells[0]);
     }
     for (let i = 0; i < kingCheckBoard.length; i++) {
       kingCheckBoard[i] > 0 && kingCheckBoard[i] < 63
-        ? this.#cellsToCheckKing.push(this.#cells[kingCheckBoard[i]])
-        : this.#cellsToCheckKing.push(this.#cells[0]);
+        ? this.#cellsToCheckKing.push(this.cells[kingCheckBoard[i]])
+        : this.#cellsToCheckKing.push(this.cells[0]);
     }
 
     //left up
@@ -585,8 +514,6 @@ class Game extends UI {
   }
 
   #checkPossibleKingMove() {
-    // console.log(this.#selectedPiece.index);
-    console.log(this.#cellsToCheckKing);
     this.#cellsToMoveKing = this.#cellsToCheckKing;
     this.#cellsToMoveKing.splice(5, 0, this.#cellsToJumpKing[4]);
     this.#cellsToMoveKing.splice(12, 0, this.#cellsToJumpKing[10]);
@@ -688,8 +615,6 @@ class Game extends UI {
       } else if (!this.#turn) {
         this.#addRedPiecesEventListeners();
       }
-
-      // this.#pieceCanJump = [];
       return;
     }
 
@@ -746,20 +671,31 @@ class Game extends UI {
     if (this.#turn) {
       this.#addRedPiecesEventListeners();
       this.#redCountdown = setInterval(
-        this.#updateRedCountdown.bind(this),
+        this.redCounter.updateRedCountdown.bind(this),
         1000
       );
       clearInterval(this.#blackCountdown);
     } else if (!this.#turn) {
       this.#addBlackPiecesEventListeners();
       this.#blackCountdown = setInterval(
-        this.#updateBlackCountdown.bind(this),
+        this.blackCounter.updateBlackCountdown.bind(this),
         1000
       );
       clearInterval(this.#redCountdown);
     }
 
-    this.#checkIfWin();
+    this.checkIfWin();
+  }
+
+  #checkColorAndFreeSpot(j) {
+    if (
+      this.#cellsToMoveKing[j].isBrown &&
+      !this.#cellsToMoveKing[j].hasPiece
+    ) {
+      this.#cellsToKingMoveHelper.push(0);
+    } else {
+      this.#cellsToKingMoveHelper.push(1);
+    }
   }
 
   #checkMoveLeftTopDirection(i) {
@@ -769,14 +705,7 @@ class Game extends UI {
       !this.#cellsToMoveKing[i].hasPiece
     ) {
       for (let j = 0; j < i + 1; j++) {
-        if (
-          this.#cellsToMoveKing[j].isBrown &&
-          !this.#cellsToMoveKing[j].hasPiece
-        ) {
-          this.#cellsToKingMoveHelper.push(0);
-        } else {
-          this.#cellsToKingMoveHelper.push(1);
-        }
+        this.#checkColorAndFreeSpot(j);
       }
       this.#selectPossibleMoveSpots(i);
       console.log(this.#cellsToMoveKing[i].element);
@@ -789,16 +718,7 @@ class Game extends UI {
       !this.#cellsToMoveKing[i].hasPiece
     ) {
       for (let j = 6; j < i + 1; j++) {
-        if (
-          this.#cellsToMoveKing[j].isBrown &&
-          !this.#cellsToMoveKing[j].hasPiece
-        ) {
-          this.#cellsToKingMoveHelper.push(0);
-        } else {
-          this.#cellsToKingMoveHelper.push(1);
-        }
-
-        // console.log(this.#cellsToMoveKing[j].element);
+        this.#checkColorAndFreeSpot(j);
       }
       this.#selectPossibleMoveSpots(i);
       console.log(this.#cellsToMoveKing[i].element);
@@ -811,14 +731,7 @@ class Game extends UI {
       !this.#cellsToMoveKing[i].hasPiece
     ) {
       for (let j = 13; j < i + 1; j++) {
-        if (
-          this.#cellsToMoveKing[j].isBrown &&
-          !this.#cellsToMoveKing[j].hasPiece
-        ) {
-          this.#cellsToKingMoveHelper.push(0);
-        } else {
-          this.#cellsToKingMoveHelper.push(1);
-        }
+        this.#checkColorAndFreeSpot(j);
       }
       this.#selectPossibleMoveSpots(i);
       console.log(this.#cellsToMoveKing[i].element);
@@ -831,14 +744,7 @@ class Game extends UI {
       !this.#cellsToMoveKing[i].hasPiece
     ) {
       for (let j = 20; j < i + 1; j++) {
-        if (
-          this.#cellsToMoveKing[j].isBrown &&
-          !this.#cellsToMoveKing[j].hasPiece
-        ) {
-          this.#cellsToKingMoveHelper.push(0);
-        } else {
-          this.#cellsToKingMoveHelper.push(1);
-        }
+        this.#checkColorAndFreeSpot(j);
       }
       this.#selectPossibleMoveSpots(i);
       console.log(this.#cellsToMoveKing[i].element);
@@ -903,7 +809,6 @@ class Game extends UI {
   }
 
   #checkOverjumpedCells(j) {
-    // console.log(this.#cellsToCheckKing[j]);
     if (
       this.#cellsToCheckKing[j].isBrown &&
       this.#cellsToCheckKing[j].hasPiece &&
@@ -926,7 +831,6 @@ class Game extends UI {
     if (this.#cellsToKingJumpHelper.length) {
       for (let k = 0; k < this.#cellsToKingJumpHelper.length; k++) {
         this.#sum += this.#cellsToKingJumpHelper[k];
-        // console.log(i, k, this.#cellsToKingJumpHelper, this.#sum);
       }
       if (this.#sum === 1) {
         this.#cellsToJump.push(this.#cellsToJumpKing[i]);
@@ -959,42 +863,20 @@ class Game extends UI {
         pieceCheckBoard[i] > 0 &&
         pieceCheckBoard[i] < 63
       ) {
-        this.#cellsToJump.push(this.#cells[pieceJumpBoard[i]]);
-        this.#cellsToCheck.push(this.#cells[pieceCheckBoard[i]]);
+        this.#cellsToJump.push(this.cells[pieceJumpBoard[i]]);
+        this.#cellsToCheck.push(this.cells[pieceCheckBoard[i]]);
       }
     }
 
     for (let i = 0; i < this.#cellsToJump.length; i++) {
-      // console.log(this.#cellsToCheck[i]);
-      // console.log(
-      //   pieceJumpBoard,
-      //   pieceCheckBoard,
-      //   this.#cellsToJump,
-      //   this.#cellsToCheck,
-      //   this.#cellsToJump[i],
-      //   this.#cellsToCheck[i],
-      //   !(
-      //     this.#cellsToJump[i].isBrown &&
-      //     this.#cellsToCheck[i].isBrown &&
-      //     this.#cellsToCheck[i].hasPiece &&
-      //     !this.#cellsToJump[i].hasPiece &&
-      //     ((this.#turn && this.#cellsToCheck[i].hasRed) ||
-      //       // &&!this.#cellsToCheck[i].element.firstChild.classList.contains("blackKing")
-      //       (!this.#turn && this.#cellsToCheck[i].hasBlack))
-      //   )
-      // );
       if (
         !(
-          (
-            this.#cellsToJump[i].isBrown &&
-            this.#cellsToCheck[i].isBrown &&
-            this.#cellsToCheck[i].hasPiece &&
-            !this.#cellsToJump[i].hasPiece &&
-            ((this.#turn && this.#cellsToCheck[i].hasRed) ||
-              // &&!this.#cellsToCheck[i].element.firstChild.classList.contains("blackKing")
-              (!this.#turn && this.#cellsToCheck[i].hasBlack))
-          )
-          // &&!this.#cellsToCheck[i].element.firstChild.classList.contains("redKing")
+          this.#cellsToJump[i].isBrown &&
+          this.#cellsToCheck[i].isBrown &&
+          this.#cellsToCheck[i].hasPiece &&
+          !this.#cellsToJump[i].hasPiece &&
+          ((this.#turn && this.#cellsToCheck[i].hasRed) ||
+            (!this.#turn && this.#cellsToCheck[i].hasBlack))
         )
       ) {
         const index = this.#cellsToJump.indexOf(this.#cellsToJump[i]);
@@ -1016,8 +898,8 @@ class Game extends UI {
         pieceCheckBoard[i] > 0 &&
         pieceCheckBoard[i] < 63
       ) {
-        this.#cellsToJump.push(this.#cells[pieceJumpBoard[i]]);
-        this.#cellsToCheck.push(this.#cells[pieceCheckBoard[i]]);
+        this.#cellsToJump.push(this.cells[pieceJumpBoard[i]]);
+        this.#cellsToCheck.push(this.cells[pieceCheckBoard[i]]);
       }
     }
 
@@ -1030,7 +912,6 @@ class Game extends UI {
         ((this.#turn && this.#cellsToCheck[i].hasRed) ||
           (!this.#turn && this.#cellsToCheck[i].hasBlack))
       ) {
-        // console.log(pieceJumpBoard[i]);
         this.#cellsToJump[i].element.classList.add("possibleJump");
       } else {
         const index = this.#cellsToJump.indexOf(this.#cellsToJump[i]);
@@ -1164,7 +1045,7 @@ class Game extends UI {
 
     this.#checkIfNextKingJumpIsPossible(pickedPiece);
 
-    this.#checkIfWin();
+    this.checkIfWin();
   }
 
   #jumpPiece(cell, index, target, pickedPiece, e) {
@@ -1236,7 +1117,7 @@ class Game extends UI {
 
     this.#checkIfNextJumpIsPossible(option, pickedPiece);
 
-    this.#checkIfWin();
+    this.checkIfWin();
   }
 
   #checkIfNextKingJumpIsPossible(pickedPiece) {
@@ -1248,97 +1129,14 @@ class Game extends UI {
       10
     );
 
-    this.#selectedPiece.cell = this.#cells[this.#selectedPiece.index - 1];
+    this.#selectedPiece.cell = this.cells[this.#selectedPiece.index - 1];
     this.#selectedPiece.target.classList.add("selected");
 
     this.#checkPossibleNextKingJump(this.#selectedPiece.index);
   }
 
   #checkPossibleNextKingJump(index) {
-    const pieceJumpBoard = [
-      index - 19,
-      index - 28,
-      index - 37,
-      index - 46,
-      index - 55,
-      index - 15,
-      index - 22,
-      index - 29,
-      index - 36,
-      index - 43,
-      index - 50,
-      index + 13,
-      index + 20,
-      index + 27,
-      index + 34,
-      index + 41,
-      index + 48,
-      index + 17,
-      index + 26,
-      index + 35,
-      index + 44,
-      index + 53,
-    ];
-
-    const pieceCheckBoard = [
-      index - 10,
-      index - 19,
-      index - 28,
-      index - 37,
-      index - 46,
-      index - 8,
-      index - 15,
-      index - 22,
-      index - 29,
-      index - 36,
-      index - 43,
-      index + 6,
-      index + 13,
-      index + 20,
-      index + 27,
-      index + 34,
-      index + 41,
-      index + 8,
-      index + 17,
-      index + 26,
-      index + 35,
-      index + 44,
-    ];
-
-    for (let i = 0; i < pieceJumpBoard.length; i++) {
-      pieceJumpBoard[i] > 0 && pieceJumpBoard[i] < 63
-        ? this.#cellsToJumpKing.push(this.#cells[pieceJumpBoard[i]])
-        : this.#cellsToJumpKing.push(this.#cells[0]);
-    }
-    for (let i = 0; i < pieceCheckBoard.length; i++) {
-      pieceCheckBoard[i] > 0 && pieceCheckBoard[i] < 63
-        ? this.#cellsToCheckKing.push(this.#cells[pieceCheckBoard[i]])
-        : this.#cellsToCheckKing.push(this.#cells[0]);
-    }
-
-    // console.log(this.#cellsToJumpKing);
-    // console.log(this.#cellsToCheckKing);
-
-    // #boundaryConditions
-    //left up
-    for (let i = 0; i < 5; i++) {
-      this.#checkLeftTopDirection(i);
-    }
-
-    // //right up
-    for (let i = 5; i < 11; i++) {
-      this.#checkRightTopDirection(i);
-    }
-
-    // // //left down
-    for (let i = 11; i < 17; i++) {
-      this.#checkLeftBottomDirection(i);
-    }
-
-    // // //right down
-    for (let i = 17; i < 22; i++) {
-      this.#checkRightBottomDirection(i);
-    }
+    this.#checkPossibleKingJumpHandler(index);
 
     this.#cellsToJump.forEach((element) =>
       element.element.classList.add("possibleJump")
@@ -1353,14 +1151,14 @@ class Game extends UI {
       if (this.#turn) {
         this.#addRedPiecesEventListeners();
         this.#redCountdown = setInterval(
-          this.#updateRedCountdown.bind(this),
+          this.redCounter.updateRedCountdown.bind(this),
           1000
         );
         clearInterval(this.#blackCountdown);
       } else if (!this.#turn) {
         this.#addBlackPiecesEventListeners();
         this.#blackCountdown = setInterval(
-          this.#updateBlackCountdown.bind(this),
+          this.blackCounter.updateBlackCountdown.bind(this),
           1000
         );
         clearInterval(this.#redCountdown);
@@ -1386,7 +1184,7 @@ class Game extends UI {
       10
     );
 
-    this.#selectedPiece.cell = this.#cells[this.#selectedPiece.index - 1];
+    this.#selectedPiece.cell = this.cells[this.#selectedPiece.index - 1];
     this.#selectedPiece.target.classList.add("selected");
 
     this.#checkPossibleNextJump(
@@ -1409,14 +1207,14 @@ class Game extends UI {
       if (this.#turn) {
         this.#addRedPiecesEventListeners();
         this.#redCountdown = setInterval(
-          this.#updateRedCountdown.bind(this),
+          this.redCounter.updateRedCountdown.bind(this),
           1000
         );
         clearInterval(this.#blackCountdown);
       } else if (!this.#turn) {
         this.#addBlackPiecesEventListeners();
         this.#blackCountdown = setInterval(
-          this.#updateBlackCountdown.bind(this),
+          this.blackCounter.updateBlackCountdown.bind(this),
           1000
         );
         clearInterval(this.#redCountdown);
@@ -1433,39 +1231,20 @@ class Game extends UI {
   }
 
   #checkPossibleMove(index) {
-    // if (this.#turn) {
-    //   this.#cellsToMove.push(this.#cells[index - 8]);
-    //   this.#cellsToMove.push(this.#cells[index - 10]);
-    // } else {
-    //   this.#cellsToMove.push(this.#cells[index + 6]);
-    //   this.#cellsToMove.push(this.#cells[index + 8]);
-    // }
-
-    // console.log(this.#cellsToMove);
-    // for (let i = 0; i < this.#cellsToMove.length; i++) {
-    //   if (this.#cellsToMove[i].isBrown && !this.#cellsToMove[i].hasPiece) {
-    //     this.#cellsToMove[i].element.classList.add("possibleMove");
-    //   } else {
-    //     const index = this.#cellsToMove.indexOf(this.#cellsToMove[i]);
-    //     this.#cellsToMove.splice(index, 1);
-    //     i--;
-    //   }
-    // }
-
     if (this.#turn) {
       index - 8 > 0 && index - 8 < 63
-        ? this.#cellsToMove.push(this.#cells[index - 8])
-        : this.#cellsToMove.push(this.#cells[0]);
+        ? this.#cellsToMove.push(this.cells[index - 8])
+        : this.#cellsToMove.push(this.cells[0]);
       index - 10 > 0 && index - 10 < 63
-        ? this.#cellsToMove.push(this.#cells[index - 10])
-        : this.#cellsToMove.push(this.#cells[0]);
+        ? this.#cellsToMove.push(this.cells[index - 10])
+        : this.#cellsToMove.push(this.cells[0]);
     } else {
       index + 6 > 0 && index + 6 < 63
-        ? this.#cellsToMove.push(this.#cells[index + 6])
-        : this.#cellsToMove.push(this.#cells[0]);
+        ? this.#cellsToMove.push(this.cells[index + 6])
+        : this.#cellsToMove.push(this.cells[0]);
       index + 8 > 0 && index + 8 < 63
-        ? this.#cellsToMove.push(this.#cells[index + 8])
-        : this.#cellsToMove.push(this.#cells[0]);
+        ? this.#cellsToMove.push(this.cells[index + 8])
+        : this.#cellsToMove.push(this.cells[0]);
     }
 
     console.log(this.#cellsToMove);
@@ -1550,8 +1329,6 @@ class Game extends UI {
       } else if (!this.#turn) {
         this.#addRedPiecesEventListeners();
       }
-
-      // this.#pieceCanJump = [];
       return;
     }
 
@@ -1614,20 +1391,20 @@ class Game extends UI {
     if (this.#turn) {
       this.#addRedPiecesEventListeners();
       this.#redCountdown = setInterval(
-        this.#updateRedCountdown.bind(this),
+        this.redCounter.updateRedCountdown.bind(this),
         1000
       );
       clearInterval(this.#blackCountdown);
     } else if (!this.#turn) {
       this.#addBlackPiecesEventListeners();
       this.#blackCountdown = setInterval(
-        this.#updateBlackCountdown.bind(this),
+        this.blackCounter.updateBlackCountdown.bind(this),
         1000
       );
       clearInterval(this.#redCountdown);
     }
 
-    this.#checkIfWin();
+    this.checkIfWin();
   }
 
   #checkIfMoveCreatesKing(option, pickedPiece) {
@@ -1662,7 +1439,6 @@ class Game extends UI {
 
     this.#selectedPiece.cell = null;
     this.#selectedPiece.index = null;
-    // this.#selectedPiece.target = null;
     this.#selectedPiece.pickedPiece = null;
     this.#selectedPiece.option = null;
 
@@ -1686,7 +1462,6 @@ class Game extends UI {
       );
     }
 
-    // this.#pieceCanJump = [];
     this.#cellsToMove = [];
     this.#cellsToJump = [];
     this.#cellsToClean = [];
@@ -1698,19 +1473,19 @@ class Game extends UI {
     this.#sum = 0;
   }
 
-  #checkIfWin() {
+  checkIfWin() {
     if (this.#redAmount === 0) {
       this.#endgameModal.classList.remove("endgame__modal--hidden");
       clearInterval(this.#blackCountdown);
       clearInterval(this.#redCountdown);
       this.#cleanMemoryClick();
       console.log(this.#redAmount, this.#blackAmount);
-      this.#endgameModalText.textContent = `${this.#player1Name} WINS!`;
+      this.#endgameModalText.textContent = `${this.player1Name} WINS!`;
     } else if (this.#blackAmount === 0) {
       this.#endgameModal.classList.remove("endgame__modal--hidden");
       clearInterval(this.#blackCountdown);
       clearInterval(this.#redCountdown);
-      this.#endgameModalText.textContent = `${this.#player2Name} WINS!`;
+      this.#endgameModalText.textContent = `${this.player2Name} WINS!`;
       this.#cleanMemoryClick();
       console.log(this.#redAmount, this.#blackAmount);
     } else if (this.#moveWithoutCapture === 15) {
@@ -1719,17 +1494,17 @@ class Game extends UI {
       clearInterval(this.#redCountdown);
       this.#endgameModalText.textContent = "NOBODY WINS!";
       this.#cleanMemoryClick();
-    } else if (this.#redCounter.time == 0) {
+    } else if (this.redCounter.time == 0) {
       this.#endgameModal.classList.remove("endgame__modal--hidden");
       clearInterval(this.#blackCountdown);
       clearInterval(this.#redCountdown);
-      this.#endgameModalText.textContent = `${this.#player1Name} WINS!`;
+      this.#endgameModalText.textContent = `${this.player1Name} WINS!`;
       this.#cleanMemoryClick();
-    } else if (this.#blackCounter.time == 0) {
+    } else if (this.blackCounter.time == 0) {
       this.#endgameModal.classList.remove("endgame__modal--hidden");
       clearInterval(this.#blackCountdown);
       clearInterval(this.#redCountdown);
-      this.#endgameModalText.textContent = `${this.#player2Name} WINS!`;
+      this.#endgameModalText.textContent = `${this.player2Name} WINS!`;
       this.#cleanMemoryClick();
     }
   }

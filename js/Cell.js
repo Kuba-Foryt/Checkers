@@ -23,15 +23,4 @@ export class Cell extends UI {
     this.element.classList.remove("white");
     this.element.classList.add("brown");
   }
-
-  // addPiece() {
-  //   const element = `<div class="piece black" data-n="${this.n}"></div>`;
-  //   // this.appendChild(element);
-  //   return element;
-  // }
-
-  // createPieceElement() {
-  //   const element = `<div class="piece black" data-n="${this.n}"></div>`;
-  //   return element;
-  // }
 }
