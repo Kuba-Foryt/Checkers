@@ -5,20 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/solid.min.css" integrity="sha512-WTx8wN/JUnDrE4DodmdFBCsy3fTGbjs8aYW9VDbW8Irldl56eMj8qUvI3qoZZs9o3o8qFxfGcyQocUY0LYZqzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/fontawesome.min.css" integrity="sha512-Rcr1oG0XvqZI1yv1HIg9LgZVDEhf2AHjv+9AuD1JXWGLzlkoKDVvE925qySLcEywpMAYA/rkg296MkvqBF07Yw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/regular.min.css" integrity="sha512-lQP1BiSutAy+g9L+bDr1v9758SFLCJ1fK+6tXzu5M22G7/pigzb+01L31Cu1TUlWYr3lnQ4XQVmQfnpTZVW1Og==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Droughts</title>
   </head>
   <body>
     <main>
       <section class="player1">
+        <i class="player1__fas fas fa-angle-double-right player1-fas" data-fas1></i>
         <section class="player1__name" data-name1></section>
         <section class="player1__timer" data-counter1></section>
+        <i class="far fa-flag" data-flag1></i>
       </section>
       <article class="table">
         <section class="board" data-board></section>
       </article>
       <section class="player2">
+        <i class="player2__fas fas fa-angle-double-right" data-fas2></i>
         <section class="player2__name" data-name2></section>
         <section class="player2__timer" data-counter2></section>
+        <i class="far fa-flag" data-flag2=""></i>
       </section>
     </main>
     <article class="starter__modal" data-starter-modal>
@@ -38,6 +45,14 @@
           YOU WON!
         </h2>
         <button class="endgame__modal__button" data-endgame-modal-button>PLAY AGAIN!</button>
+      </section>
+    </article>
+    <article class="mustCapture__modal mustCapture__modal--hidden" data-capture-modal>
+      <section class="mustCapture__modal__content">
+        <h2 class="mustCapture__modal__text">
+          Capture is obligatory! Pieces with possible capture move are marked with blue color 
+        </h2>
+        <button class="mustCapture__modal__button" data-capture-modal-button>Got it!</button>
       </section>
     </article>
     <script type="module" src="./js/Game.js"></script>

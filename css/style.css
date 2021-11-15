@@ -98,6 +98,31 @@ main {
   /* z-index: -2; */
 }
 
+.fas {
+  font-size: var(--font-size);
+}
+
+.far {
+  font-size: var(--font-size);
+}
+
+.fa-flag {
+  cursor: pointer;
+  background: white;
+}
+
+.player1__fas {
+  color: red;
+}
+
+.player1__fas--hidden {
+  visibility: hidden;
+}
+
+.player2__fas--hidden {
+  visibility: hidden;
+}
+
 .player1 {
   grid-area: header;
   display: flex;
@@ -128,12 +153,17 @@ main {
 .player1__name,
 .player2__name {
   /* border: 0.3rem solid #000; */
-  margin: 0 2rem;
+  margin: 0 2rem 0 0.5rem;
   font-weight: 550;
   /* align-items: flex-end; */
   padding: 0.3rem 0.3rem;
   font-size: var(--font-size);
 }
+
+.player1__name {
+  color: red;
+}
+
 .player1__timer,
 .player2__timer {
   background-color: white;
@@ -253,7 +283,8 @@ main {
 }
 
 .starter__modal,
-.endgame__modal {
+.endgame__modal,
+.mustCapture__modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -267,7 +298,8 @@ main {
 }
 
 .starter__modal__content,
-.endgame__modal__content {
+.endgame__modal__content,
+.mustCapture__modal__content {
   width: 50vw;
   height: 50vh;
   background-color: #fff;
@@ -283,6 +315,13 @@ main {
   text-align: center;
   text-transform: uppercase;
 }
+
+.mustCapture__modal__text {
+  font-size: 1.8rem;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .starter__modal__form__container {
   display: flex;
   flex-direction: row;
@@ -299,6 +338,7 @@ main {
 }
 
 .starter__modal__button,
+.mustCapture__modal__button,
 .endgame__modal__button {
   cursor: pointer;
   background-color: transparent;
@@ -312,6 +352,7 @@ main {
 }
 
 .starter__modal__button:hover,
+.mustCapture__modal__button:hover,
 .endgame__modal__button:hover {
   background-color: #000;
   color: #fff;
@@ -319,6 +360,7 @@ main {
 }
 
 .endgame__modal--hidden,
+.mustCapture__modal--hidden,
 .starter__modal--hidden {
   visibility: hidden;
 }
@@ -402,6 +444,7 @@ main {
   }
 
   .starter__modal__content,
+  .mustCapture__modal__content,
   .endgame__modal__content {
     width: 100vw;
     height: 100vh;
@@ -411,6 +454,9 @@ main {
   .endgame__modal__text {
     font-size: 3.5rem;
   }
+  .mustCapture__modal__text {
+    font-size: 1.8rem;
+  }
 
   .starter__modal__input__player1,
   .starter__modal__input__player2 {
@@ -418,6 +464,7 @@ main {
   }
 
   .starter__modal__button,
+  .mustCapture__modal__button,
   .endgame__modal__button {
     font-size: 1.8rem;
   }
@@ -430,6 +477,7 @@ main {
   }
 
   .starter__modal__content,
+  .mustCapture__modal__content,
   .endgame__modal__content {
     width: 100vw;
     height: 100vh;
@@ -453,6 +501,7 @@ main {
   }
 
   .starter__modal__button,
+  .mustCapture__modal__button,
   .endgame__modal__button {
     font-size: 1.8rem;
   }
@@ -467,6 +516,7 @@ main {
 
 @media only screen and (min-width: 736px) {
   .starter__modal__content,
+  .mustCapture__modal__content,
   .endgame__modal__content {
     width: 100vw;
     height: 80vh;
@@ -488,6 +538,7 @@ main {
   }
 
   .starter__modal__button,
+  .mustCapture__modal__button,
   .endgame__modal__button {
     font-size: 2rem;
   }
@@ -536,6 +587,10 @@ main {
     padding: 0.2rem 1.3rem;
   }
 
+  .mustCapture__modal__text {
+    font-size: 3rem;
+  }
+
   .red {
     box-shadow: 0px 0px 0px 0.6rem rgb(255, 70, 70) inset;
   }
@@ -555,6 +610,40 @@ main {
 
 @media only screen and (min-width: 1281px) {
   .starter__modal__content,
+  .mustCapture__modal__content,
+  .endgame__modal__content {
+    width: 70vw;
+    height: 70vh;
+  }
+  :root {
+    --cell-size: 4em;
+    --font-size: 2rem;
+  }
+
+  .mustCapture__modal__text {
+    font-size: 3rem;
+  }
+
+  .red {
+    box-shadow: 0px 0px 0px 0.6rem rgb(255, 70, 70) inset;
+  }
+
+  .black {
+    box-shadow: 0px 0px 0px 0.6rem rgb(80, 80, 80) inset;
+  }
+
+  .redKing {
+    box-shadow: 0px 0px 0px 0.6rem red inset;
+  }
+
+  .blackKing {
+    box-shadow: 0px 0px 0px 0.6rem rgb(45, 45, 45) inset;
+  }
+}
+
+@media only screen and (min-width: 1600px) {
+  .starter__modal__content,
+  .mustCapture__modal__content,
   .endgame__modal__content {
     width: 70vw;
     height: 70vh;
@@ -580,138 +669,3 @@ main {
     box-shadow: 0px 0px 0px 0.85rem rgb(45, 45, 45) inset;
   }
 }
-/* @media (orientation: portrait) and (min-width: 320px) {
-  .starter__modal__content,
-  .endgame__modal__content {
-    width: 100vw;
-    height: 80vh;
-  }
-
-  :root {
-    --cell-size: 1.6rem;
-    --font-size: 1rem;
-  }
-
-  main {
-    grid-template-rows: 10% auto 10%;
-  }
-
-  .table {
-    padding: 0.2rem 1rem 0.2rem 1rem;
-  }
-
-  .player1__timer,
-  .player2__timer {
-    border: 0.15rem solid #000;
-    padding: 0.1rem 1.3rem;
-  }
-}
-
-@media (orientation: landscape) and (min-width: 320px) {
-  main {
-    grid-template-rows: 10% auto 10%;
-  }
-  :root {
-    --cell-size: 1.6rem;
-    --font-size: 0.9rem;
-  }
-
-  .table {
-    padding: 0.2rem 1rem 0.2rem 1rem;
-  }
-
-  .player1__timer,
-  .player2__timer {
-    border: 0.15rem solid #000;
-    padding: 0.1rem 1.3rem;
-  }
-}
-
-@media (orientation: portrait) and (min-width: 375px) {
-  :root {
-    --cell-size: 2rem;
-    --font-size: 0.9rem;
-  }
-}
-@media (orientation: landscape) and (min-width: 375px) {
-  :root {
-    --cell-size: 1.7rem;
-    --font-size: 0.9rem;
-  }
-
-  main {
-    grid-template-rows: 9% auto 9%;
-  }
-}
-
-@media (orientation: portrait) and (min-width: 410px) {
-  .starter__modal__content,
-  .endgame__modal__content {
-    width: 90vw;
-    height: 80vh;
-  }
-
-  :root {
-    --cell-size: 2.2rem;
-    --font-size: 1.1rem;
-  }
-  main {
-    grid-template-rows: 8% auto 8%;
-  }
-}
-
-
-@media (orientation: landscape) and (min-width: 515px) {
-  :root {
-    --cell-size: 2.35rem;
-    --font-size: 1.2rem;
-  }
-
-  main {
-    grid-template-rows: 10% auto 10%;
-  }
-}
-
-@media (orientation: landscape) and (min-width: 568px) {
-  :root {
-    --cell-size: 1.76rem;
-    --font-size: 0.9rem;
-  }
-
-  main {
-    grid-template-rows: 8.5% auto 8.5%;
-  }
-}
-
-@media (orientation: landscape) and (min-width: 568px) {
-  :root {
-    --cell-size: 2.4rem;
-    --font-size: 1.2rem;
-  }
-}
-
-@media (orientation: landscape) and (min-width: 768px) {
-  .starter__modal__content,
-  .endgame__modal__content {
-    width: 70vw;
-    height: 50vh;
-  }
-
-  :root {
-    --cell-size: 2.1rem;
-    --font-size: 1.2rem;
-  }
-
-  main {
-    grid-template-rows: 10% auto 10%;
-  }
-
-  .table {
-    padding: 0rem 1.5rem;
-  }
-
-  .player1__timer,
-  .player2__timer {
-    border: 0.2rem solid #000;
-  }
-} */

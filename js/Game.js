@@ -32,6 +32,7 @@ class Game extends UI {
   #cellsToKingMoveHelper = [];
 
   #sum = 0;
+  #popup = false;
   #moveWithoutCapture = 0;
 
   #selectedPiece = {
@@ -66,6 +67,13 @@ class Game extends UI {
   player2Name = null;
   name1 = null;
   name2 = null;
+  fas1 = null;
+  fas2 = null;
+  flag1 = null;
+  flag2 = null;
+
+  #captureModal = null;
+  #captureModalBtn = null;
 
   #endgameModal = null;
   #endgameModalText = null;
@@ -85,10 +93,16 @@ class Game extends UI {
     this.blackPlayer = this.getElement(this.UISelectors.counter2);
     this.name1 = this.getElement(this.UISelectors.name1);
     this.name2 = this.getElement(this.UISelectors.name2);
+    this.fas1 = this.getElement(this.UISelectors.fas1);
+    this.fas2 = this.getElement(this.UISelectors.fas2);
+    this.flag1 = this.getElement(this.UISelectors.flag1);
+    this.flag2 = this.getElement(this.UISelectors.flag2);
     this.#starterModal = this.getElement(this.UISelectors.starterModal);
     this.starterPlayer1 = this.getElement(this.UISelectors.starterModalPlayer1);
     this.starterPlayer2 = this.getElement(this.UISelectors.starterModalPlayer2);
     this.#starterBtn = this.getElement(this.UISelectors.starterModalBtn);
+    this.#captureModal = this.getElement(this.UISelectors.captureModal);
+    this.#captureModalBtn = this.getElement(this.UISelectors.captureModalBtn);
     this.#endgameModal = this.getElement(this.UISelectors.endgameModal);
     this.#endgameModalText = this.getElement(this.UISelectors.endgameModalText);
     this.#endgameModalBtn = this.getElement(this.UISelectors.endgameModalBtn);
@@ -115,6 +129,7 @@ class Game extends UI {
     this.#starterModal.classList.add("starter__modal--hidden");
     this.#cellsElements = this.getElements(this.UISelectors.cell);
     this.#addBlackPiecesEventListeners();
+    this.#addFlagsEventListeners();
     this.#redCountdown = setInterval(
       this.redCounter.updateRedCountdown.bind(this),
       1000
@@ -131,6 +146,11 @@ class Game extends UI {
     this.#endgameModalBtn.addEventListener(
       "click",
       this.#restartGame.bind(this)
+    );
+
+    this.#captureModalBtn.addEventListener(
+      "click",
+      this.#hideCapturePopup.bind(this)
     );
   }
 
@@ -151,6 +171,7 @@ class Game extends UI {
     this.#renderBlackPieces();
     this.#addKingCreationCells();
     this.#turn = true;
+    this.#popup = false;
     this.#endgameModal.classList.add("endgame__modal--hidden");
     this.#cellsElements = this.getElements(this.UISelectors.cell);
     this.#addBlackPiecesEventListeners();
@@ -296,6 +317,25 @@ class Game extends UI {
     this.cells[19].element.firstChild.classList.add("redKing");
   }
 
+  #hideFas() {
+    if (this.#turn) {
+      this.fas1.classList.add("player1__fas--hidden");
+      this.fas2.classList.remove("player2__fas--hidden");
+      this.flag1.classList.add("player1__fas--hidden");
+      this.flag2.classList.remove("player2__fas--hidden");
+    } else {
+      this.fas1.classList.remove("player1__fas--hidden");
+      this.fas2.classList.add("player2__fas--hidden");
+      this.flag1.classList.remove("player1__fas--hidden");
+      this.flag2.classList.add("player2__fas--hidden");
+    }
+  }
+
+  #addFlagsEventListeners() {
+    this.flag1.addEventListener("click", this.#giveUpGame.bind(this));
+    this.flag2.addEventListener("click", this.#giveUpGame.bind(this));
+  }
+
   #addBlackPiecesEventListeners() {
     this.#red = document.querySelectorAll(".red");
     this.#black = document.querySelectorAll(".black");
@@ -308,6 +348,7 @@ class Game extends UI {
     this.#red.forEach((element) => {
       element.removeEventListener("click", this.#handleCellClick);
     });
+    this.#hideFas();
   }
   #addRedPiecesEventListeners() {
     this.#red = document.querySelectorAll(".red");
@@ -321,6 +362,7 @@ class Game extends UI {
     this.#black.forEach((element) => {
       element.removeEventListener("click", this.#handleCellClick);
     });
+    this.#hideFas();
   }
 
   #handleCellClick = (e) => {
@@ -408,6 +450,11 @@ class Game extends UI {
         this.#cellsToCheck = [];
       }
     }
+  }
+
+  #hideCapturePopup(e) {
+    e.preventDefault();
+    this.#captureModal.classList.add("mustCapture__modal--hidden");
   }
 
   #checkPossibleKingJump(index) {
@@ -587,10 +634,17 @@ class Game extends UI {
       this.#pieceCanJump.length &&
       this.#selectedPiece.option != this.#selectedPiece.target
     ) {
-      console.log(this.#pieceCanJump);
       for (let i = 0; i < this.#pieceCanJump.length; i++) {
         this.#pieceCanJump[i].classList.add("canJump");
       }
+      if (!this.#popup) {
+        this.#captureModal.classList.remove("mustCapture__modal--hidden");
+        this.#popup = !this.#popup;
+      }
+      // !this.#popup
+      //   ? this.#captureModal.classList.remove("mustCapture__modal--hidden") &&
+      //     this.#popup === 1
+      //   : this.#popup === 1;
       if (this.#selectedPiece.target) {
         this.#selectedPiece.target.classList.remove("selected");
       }
@@ -1301,10 +1355,20 @@ class Game extends UI {
       this.#pieceCanJump.length &&
       this.#selectedPiece.option != this.#selectedPiece.target
     ) {
-      console.log(this.#pieceCanJump);
       for (let i = 0; i < this.#pieceCanJump.length; i++) {
         this.#pieceCanJump[i].classList.add("canJump");
       }
+
+      // if (!this.#popup) {
+      //   this.#captureModal.classList.remove("mustCapture__modal--hidden");
+      // }
+      // this.#popup = 1;
+
+      if (!this.#popup) {
+        this.#captureModal.classList.remove("mustCapture__modal--hidden");
+        this.#popup = !this.#popup;
+      }
+
       if (this.#selectedPiece.target) {
         this.#selectedPiece.target.classList.remove("selected");
       }
@@ -1506,6 +1570,25 @@ class Game extends UI {
       clearInterval(this.#redCountdown);
       this.#endgameModalText.textContent = `${this.player2Name} WINS!`;
       this.#cleanMemoryClick();
+    }
+  }
+
+  #giveUpGame(e) {
+    console.log("click");
+    console.log(e.target);
+    console.log(this.flag1);
+    if (e.target === this.flag1) {
+      this.#endgameModal.classList.remove("endgame__modal--hidden");
+      clearInterval(this.#blackCountdown);
+      clearInterval(this.#redCountdown);
+      this.#cleanMemoryClick();
+      this.#endgameModalText.textContent = `${this.player1Name} WINS!`;
+    } else if (e.target === this.flag2) {
+      this.#endgameModal.classList.remove("endgame__modal--hidden");
+      clearInterval(this.#blackCountdown);
+      clearInterval(this.#redCountdown);
+      this.#cleanMemoryClick();
+      this.#endgameModalText.textContent = `${this.player2Name} WINS!`;
     }
   }
 }
