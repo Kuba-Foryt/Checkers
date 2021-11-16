@@ -33,6 +33,7 @@ class Game extends UI {
 
   #sum = 0;
   #popup = false;
+  english = true;
   #moveWithoutCapture = 0;
 
   #selectedPiece = {
@@ -61,6 +62,9 @@ class Game extends UI {
 
   #starterModal = null;
   #starterBtn = null;
+  #starterHeader = null;
+  #starterLanguageBtn = null;
+
   starterPlayer1 = null;
   starterPlayer2 = null;
   player1Name = null;
@@ -71,13 +75,17 @@ class Game extends UI {
   fas2 = null;
   flag1 = null;
   flag2 = null;
+  languageBtn = null;
 
   #captureModal = null;
+  #captureModalText = null;
+  #captureModalLanguageBtn = null;
   #captureModalBtn = null;
 
   #endgameModal = null;
   #endgameModalText = null;
   #endgameModalBtn = null;
+  #endgameModalLanguageBtn = null;
 
   #redCountdown = null;
   #blackCountdown = null;
@@ -97,15 +105,27 @@ class Game extends UI {
     this.fas2 = this.getElement(this.UISelectors.fas2);
     this.flag1 = this.getElement(this.UISelectors.flag1);
     this.flag2 = this.getElement(this.UISelectors.flag2);
+    this.languageBtn = this.getElement(this.UISelectors.languageBtn);
     this.#starterModal = this.getElement(this.UISelectors.starterModal);
+    this.#starterHeader = this.getElement(this.UISelectors.starterModalHeader);
+    this.#starterLanguageBtn = this.getElement(
+      this.UISelectors.starterLanguageBtn
+    );
     this.starterPlayer1 = this.getElement(this.UISelectors.starterModalPlayer1);
     this.starterPlayer2 = this.getElement(this.UISelectors.starterModalPlayer2);
     this.#starterBtn = this.getElement(this.UISelectors.starterModalBtn);
     this.#captureModal = this.getElement(this.UISelectors.captureModal);
+    this.#captureModalText = this.getElement(this.UISelectors.captureModalText);
+    this.#captureModalLanguageBtn = this.getElement(
+      this.UISelectors.captureModalLanguageBtn
+    );
     this.#captureModalBtn = this.getElement(this.UISelectors.captureModalBtn);
     this.#endgameModal = this.getElement(this.UISelectors.endgameModal);
     this.#endgameModalText = this.getElement(this.UISelectors.endgameModalText);
     this.#endgameModalBtn = this.getElement(this.UISelectors.endgameModalBtn);
+    this.#endgameModalLanguageBtn = this.getElement(
+      this.UISelectors.endgameLanguageBtn
+    );
   }
 
   #newGame() {
@@ -120,6 +140,7 @@ class Game extends UI {
     this.#renderBlackPieces();
     this.#addKingCreationCells();
     this.#starterBtn.addEventListener("click", this.#startGame.bind(this));
+    this.#addBtnsEventListeners();
     // this.createCustomKings();
   }
 
@@ -127,6 +148,7 @@ class Game extends UI {
     e.preventDefault();
     this.redCounter.updateNames.bind(this)();
     this.#starterModal.classList.add("starter__modal--hidden");
+    this.languageBtn.classList.remove("languageButton--hidden");
     this.#cellsElements = this.getElements(this.UISelectors.cell);
     this.#addBlackPiecesEventListeners();
     this.#addFlagsEventListeners();
@@ -142,16 +164,6 @@ class Game extends UI {
     if (this.#turn) {
       clearInterval(this.#redCountdown);
     }
-
-    this.#endgameModalBtn.addEventListener(
-      "click",
-      this.#restartGame.bind(this)
-    );
-
-    this.#captureModalBtn.addEventListener(
-      "click",
-      this.#hideCapturePopup.bind(this)
-    );
   }
 
   #restartGame(e) {
@@ -170,17 +182,17 @@ class Game extends UI {
     this.#renderRedPieces();
     this.#renderBlackPieces();
     this.#addKingCreationCells();
+    this.#moveWithoutCapture = 0;
     this.#turn = true;
     this.#popup = false;
     this.#endgameModal.classList.add("endgame__modal--hidden");
+    this.languageBtn.classList.remove("languageButton--hidden");
     this.#cellsElements = this.getElements(this.UISelectors.cell);
     this.#addBlackPiecesEventListeners();
     this.#blackCountdown = setInterval(
       this.blackCounter.updateBlackCountdown.bind(this),
       1000
     );
-
-    this.#endgameModalBtn.addEventListener("click", this.#restartGame);
   }
 
   #generateCells() {
@@ -331,6 +343,30 @@ class Game extends UI {
     }
   }
 
+  #addBtnsEventListeners() {
+    this.#starterLanguageBtn.addEventListener(
+      "click",
+      this.#changeLanguage.bind(this)
+    );
+    this.#endgameModalBtn.addEventListener(
+      "click",
+      this.#restartGame.bind(this)
+    );
+    this.#endgameModalLanguageBtn.addEventListener(
+      "click",
+      this.#changeLanguage.bind(this)
+    );
+    this.languageBtn.addEventListener("click", this.#changeLanguage.bind(this));
+    this.#captureModalBtn.addEventListener(
+      "click",
+      this.#hideCapturePopup.bind(this)
+    );
+    this.#captureModalLanguageBtn.addEventListener(
+      "click",
+      this.#changeLanguage.bind(this)
+    );
+  }
+
   #addFlagsEventListeners() {
     this.flag1.addEventListener("click", this.#giveUpGame.bind(this));
     this.flag2.addEventListener("click", this.#giveUpGame.bind(this));
@@ -455,6 +491,7 @@ class Game extends UI {
   #hideCapturePopup(e) {
     e.preventDefault();
     this.#captureModal.classList.add("mustCapture__modal--hidden");
+    this.languageBtn.classList.remove("languageButton--hidden");
   }
 
   #checkPossibleKingJump(index) {
@@ -639,12 +676,9 @@ class Game extends UI {
       }
       if (!this.#popup) {
         this.#captureModal.classList.remove("mustCapture__modal--hidden");
+        this.languageBtn.classList.add("languageButton--hidden");
         this.#popup = !this.#popup;
       }
-      // !this.#popup
-      //   ? this.#captureModal.classList.remove("mustCapture__modal--hidden") &&
-      //     this.#popup === 1
-      //   : this.#popup === 1;
       if (this.#selectedPiece.target) {
         this.#selectedPiece.target.classList.remove("selected");
       }
@@ -1359,11 +1393,6 @@ class Game extends UI {
         this.#pieceCanJump[i].classList.add("canJump");
       }
 
-      // if (!this.#popup) {
-      //   this.#captureModal.classList.remove("mustCapture__modal--hidden");
-      // }
-      // this.#popup = 1;
-
       if (!this.#popup) {
         this.#captureModal.classList.remove("mustCapture__modal--hidden");
         this.#popup = !this.#popup;
@@ -1539,56 +1568,87 @@ class Game extends UI {
 
   checkIfWin() {
     if (this.#redAmount === 0) {
-      this.#endgameModal.classList.remove("endgame__modal--hidden");
-      clearInterval(this.#blackCountdown);
-      clearInterval(this.#redCountdown);
-      this.#cleanMemoryClick();
-      console.log(this.#redAmount, this.#blackAmount);
-      this.#endgameModalText.textContent = `${this.player1Name} WINS!`;
+      this.endGame();
+      this.english
+        ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
+        : (this.#endgameModalText.textContent = `${this.player1Name} WYGRYWA!`);
     } else if (this.#blackAmount === 0) {
-      this.#endgameModal.classList.remove("endgame__modal--hidden");
-      clearInterval(this.#blackCountdown);
-      clearInterval(this.#redCountdown);
-      this.#endgameModalText.textContent = `${this.player2Name} WINS!`;
-      this.#cleanMemoryClick();
-      console.log(this.#redAmount, this.#blackAmount);
+      this.endGame();
+      this.english
+        ? (this.#endgameModalText.textContent = `${this.player2Name} WINS!`)
+        : (this.#endgameModalText.textContent = `${this.player2Name} WYGRYWA!`);
     } else if (this.#moveWithoutCapture === 15) {
-      this.endgameMmodal.classList.remove("endgame__modal--hidden");
-      clearInterval(this.#blackCountdown);
-      clearInterval(this.#redCountdown);
-      this.#endgameModalText.textContent = "NOBODY WINS!";
-      this.#cleanMemoryClick();
+      this.endGame();
+      this.english
+        ? (this.#endgameModalText.textContent =
+            "TOO MANY MOVES WITHOUT CAPTURE. NOBODY WINS!")
+        : (this.#endgameModalText.textContent =
+            "ZBYT DUŻO RUCHÓW BEZ WYKONANEGO BICIA. REMIS!");
     } else if (this.redCounter.time == 0) {
-      this.#endgameModal.classList.remove("endgame__modal--hidden");
-      clearInterval(this.#blackCountdown);
-      clearInterval(this.#redCountdown);
-      this.#endgameModalText.textContent = `${this.player1Name} WINS!`;
-      this.#cleanMemoryClick();
+      this.endGame();
+      this.english
+        ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
+        : (this.#endgameModalText.textContent = `${this.player1Name} WYGRYWA!`);
     } else if (this.blackCounter.time == 0) {
-      this.#endgameModal.classList.remove("endgame__modal--hidden");
-      clearInterval(this.#blackCountdown);
-      clearInterval(this.#redCountdown);
-      this.#endgameModalText.textContent = `${this.player2Name} WINS!`;
-      this.#cleanMemoryClick();
+      this.endGame();
+      this.english
+        ? (this.#endgameModalText.textContent = `${this.player2Name} WINS!`)
+        : (this.#endgameModalText.textContent = `${this.player2Name} WYGRYWA!`);
     }
   }
 
   #giveUpGame(e) {
-    console.log("click");
-    console.log(e.target);
-    console.log(this.flag1);
+    this.languageBtn.classList.add("languageButton--hidden");
     if (e.target === this.flag1) {
-      this.#endgameModal.classList.remove("endgame__modal--hidden");
-      clearInterval(this.#blackCountdown);
-      clearInterval(this.#redCountdown);
-      this.#cleanMemoryClick();
-      this.#endgameModalText.textContent = `${this.player1Name} WINS!`;
+      this.endGame();
+      this.english
+        ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
+        : (this.#endgameModalText.textContent = `${this.player1Name} WYGRYWA!`);
     } else if (e.target === this.flag2) {
-      this.#endgameModal.classList.remove("endgame__modal--hidden");
-      clearInterval(this.#blackCountdown);
-      clearInterval(this.#redCountdown);
-      this.#cleanMemoryClick();
-      this.#endgameModalText.textContent = `${this.player2Name} WINS!`;
+      this.endGame();
+      this.english
+        ? (this.#endgameModalText.textContent = `${this.player2Name} WINS!`)
+        : (this.#endgameModalText.textContent = `${this.player2Name} WYGRYWA!`);
+    }
+  }
+
+  endGame() {
+    this.#endgameModal.classList.remove("endgame__modal--hidden");
+    this.languageBtn.classList.add("languageButton--hidden");
+    clearInterval(this.#blackCountdown);
+    clearInterval(this.#redCountdown);
+    this.#cleanMemoryClick();
+  }
+
+  #changeLanguage() {
+    console.log("click");
+    this.english = !this.english;
+    this.#changeText();
+  }
+
+  #changeText() {
+    if (this.english) {
+      this.#captureModalText.innerText =
+        "Capture is obligatory! Pieces with possible capture move are marked with blue color";
+      this.#captureModalBtn.innerText = "GOT IT!";
+      this.#starterBtn.innerText = "START GAME!";
+      this.starterPlayer1.placeholder = "First player's name";
+      this.starterPlayer2.placeholder = "Second player's name";
+      this.#starterHeader.innerText = "CHECKERS";
+      this.#endgameModalBtn.innerText = "PLAY AGAIN!";
+      this.#endgameModalText.textContent =
+        "TOO MANY MOVES WITHOUT CAPTURE. NOBODY WINS!";
+    } else {
+      this.#captureModalText.innerText =
+        "Bicie jest obowiązkowe! Piony, które mogą wykonać bicie zaznaczono na niebiesko";
+      this.#captureModalBtn.innerText = "OK!";
+      this.#starterBtn.innerText = "ROZPOCZNIJ GRĘ!";
+      this.starterPlayer1.placeholder = "Imię gracza nr 1";
+      this.starterPlayer2.placeholder = "Imię gracza nr 2";
+      this.#starterHeader.innerText = "WARCABY";
+      this.#endgameModalBtn.innerText = "ZAGRAJ PONOWNIE!";
+      this.#endgameModalText.textContent =
+        "ZBYT DUŻO RUCHÓW BEZ WYKONANEGO BICIA. REMIS!";
     }
   }
 }

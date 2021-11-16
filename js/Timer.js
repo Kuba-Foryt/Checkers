@@ -55,10 +55,26 @@ export class Timer extends UI {
 
   updateNames() {
     this.player1Name = this.starterPlayer1.value.toUpperCase();
-    !this.player1Name ? (this.player1Name = "PLAYER 1") : this.player1Name;
+    !this.player1Name
+      ? this.english
+        ? (this.player1Name = "PLAYER 1")
+        : (this.player1Name = "GRACZ 1")
+      : this.player1Name;
     this.player2Name = this.starterPlayer2.value.toUpperCase();
-    !this.player2Name ? (this.player2Name = "PLAYER 2") : this.player2Name;
+    !this.player2Name
+      ? this.english
+        ? (this.player2Name = "PLAYER 2")
+        : (this.player2Name = "GRACZ 2")
+      : this.player2Name;
     this.name2.innerHTML = this.player1Name;
     this.name1.innerHTML = this.player2Name;
   }
+  // updateNames() {
+  //   this.player1Name = this.starterPlayer1.value.toUpperCase();
+  //   !this.player1Name ? (this.player1Name = "PLAYER 1") : this.player1Name;
+  //   this.player2Name = this.starterPlayer2.value.toUpperCase();
+  //   !this.player2Name ? (this.player2Name = "PLAYER 2") : this.player2Name;
+  //   this.name2.innerHTML = this.player1Name;
+  //   this.name1.innerHTML = this.player2Name;
+  // }
 }

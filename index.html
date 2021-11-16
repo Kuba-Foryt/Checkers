@@ -27,6 +27,7 @@
         <section class="player2__timer" data-counter2></section>
         <i class="far fa-flag" data-flag2=""></i>
       </section>
+      <div class="languageButton languageButton--hidden" data-language-button></div>
     </main>
     <article class="starter__modal" data-starter-modal>
       <section class="starter__modal__content">
@@ -36,7 +37,8 @@
           <input class="starter__modal__input__player1" data-starter-player1 type="text" placeholder="First player's name">
           <input class="starter__modal__input__player2" data-starter-player2 type="text" placeholder="Second player's name">
         </section> 
-        <button class="starter__modal__button" data-starter-modal-button>START GAME!</button>  
+        <button class="starter__modal__button" data-starter-modal-button>START GAME!</button>
+      <div class="starter__modal__languageButton" data-starter-language-button></div>
       </section>
     </article>
     <article class="endgame__modal endgame__modal--hidden" data-endgame-modal>
@@ -45,14 +47,16 @@
           YOU WON!
         </h2>
         <button class="endgame__modal__button" data-endgame-modal-button>PLAY AGAIN!</button>
+        <div class="endgame__modal__languageButton" data-endgame-modal-language-button></div>
       </section>
     </article>
     <article class="mustCapture__modal mustCapture__modal--hidden" data-capture-modal>
       <section class="mustCapture__modal__content">
-        <h2 class="mustCapture__modal__text">
+        <h2 class="mustCapture__modal__text" data-capture-modal-text>
           Capture is obligatory! Pieces with possible capture move are marked with blue color 
         </h2>
-        <button class="mustCapture__modal__button" data-capture-modal-button>Got it!</button>
+        <button class="mustCapture__modal__button" data-capture-modal-button>GOT IT!</button>
+        <div class="mustCapture__modal__languageButton" data-capture-modal-language-button></div>
       </section>
     </article>
     <script type="module" src="./js/Game.js"></script>
