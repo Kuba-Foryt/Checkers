@@ -453,6 +453,7 @@ main {
   .endgame__modal__languageButton {
     width: calc(var(--font-size) * 2);
     height: calc(var(--font-size) * 2);
+    left: 2.5%;
   }
 }
 
@@ -501,6 +502,14 @@ main {
   .endgame__modal__button {
     font-size: 1.8rem;
   }
+
+  .languageButton,
+  .starter__modal__languageButton,
+  .mustCapture__modal__languageButton,
+  .endgame__modal__languageButton {
+    left: auto;
+    right: 5%;
+  }
 }
 
 /* @media (orientation: landscape) and (min-width: 568px) {
@@ -545,6 +554,7 @@ main {
   .endgame__modal__languageButton {
     width: calc(var(--font-size) * 3);
     height: calc(var(--font-size) * 3);
+    right: 5%;
   }
 }
 

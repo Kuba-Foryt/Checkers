@@ -54,6 +54,7 @@ class Game extends UI {
   #blackAmount = 12;
   #redAmount = 12;
   #turn = true;
+  #winner = null;
 
   redPlayer = null;
   blackPlayer = null;
@@ -183,6 +184,7 @@ class Game extends UI {
     this.#renderBlackPieces();
     this.#addKingCreationCells();
     this.#moveWithoutCapture = 0;
+    this.winner = null;
     this.#turn = true;
     this.#popup = false;
     this.#endgameModal.classList.add("endgame__modal--hidden");
@@ -1569,11 +1571,13 @@ class Game extends UI {
   checkIfWin() {
     if (this.#redAmount === 0) {
       this.endGame();
+      this.#winner = "black";
       this.english
         ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
         : (this.#endgameModalText.textContent = `${this.player1Name} WYGRYWA!`);
     } else if (this.#blackAmount === 0) {
       this.endGame();
+      this.#winner = "red";
       this.english
         ? (this.#endgameModalText.textContent = `${this.player2Name} WINS!`)
         : (this.#endgameModalText.textContent = `${this.player2Name} WYGRYWA!`);
@@ -1586,11 +1590,13 @@ class Game extends UI {
             "ZBYT DUŻO RUCHÓW BEZ WYKONANEGO BICIA. REMIS!");
     } else if (this.redCounter.time == 0) {
       this.endGame();
+      this.#winner = "black";
       this.english
         ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
         : (this.#endgameModalText.textContent = `${this.player1Name} WYGRYWA!`);
     } else if (this.blackCounter.time == 0) {
       this.endGame();
+      this.#winner = "red";
       this.english
         ? (this.#endgameModalText.textContent = `${this.player2Name} WINS!`)
         : (this.#endgameModalText.textContent = `${this.player2Name} WYGRYWA!`);
@@ -1601,11 +1607,13 @@ class Game extends UI {
     this.languageBtn.classList.add("languageButton--hidden");
     if (e.target === this.flag1) {
       this.endGame();
+      this.#winner = "black";
       this.english
         ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
         : (this.#endgameModalText.textContent = `${this.player1Name} WYGRYWA!`);
     } else if (e.target === this.flag2) {
       this.endGame();
+      this.#winner = "red";
       this.english
         ? (this.#endgameModalText.textContent = `${this.player2Name} WINS!`)
         : (this.#endgameModalText.textContent = `${this.player2Name} WYGRYWA!`);
@@ -1636,8 +1644,12 @@ class Game extends UI {
       this.starterPlayer2.placeholder = "Second player's name";
       this.#starterHeader.innerText = "CHECKERS";
       this.#endgameModalBtn.innerText = "PLAY AGAIN!";
-      this.#endgameModalText.textContent =
-        "TOO MANY MOVES WITHOUT CAPTURE. NOBODY WINS!";
+      this.#moveWithoutCapture === 15
+        ? (this.#endgameModalText.textContent =
+            "TOO MANY MOVES WITHOUT CAPTURE. NOBODY WINS!")
+        : this.#winner === "black"
+        ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
+        : (this.#endgameModalText.textContent = `${this.player2Name} WINS!`);
     } else {
       this.#captureModalText.innerText =
         "Bicie jest obowiązkowe! Piony, które mogą wykonać bicie zaznaczono na niebiesko";
@@ -1647,8 +1659,12 @@ class Game extends UI {
       this.starterPlayer2.placeholder = "Imię gracza nr 2";
       this.#starterHeader.innerText = "WARCABY";
       this.#endgameModalBtn.innerText = "ZAGRAJ PONOWNIE!";
-      this.#endgameModalText.textContent =
-        "ZBYT DUŻO RUCHÓW BEZ WYKONANEGO BICIA. REMIS!";
+      this.#moveWithoutCapture === 15
+        ? (this.#endgameModalText.textContent =
+            "ZBYT DUŻO RUCHÓW BEZ WYKONANEGO BICIA. REMIS!")
+        : this.#winner === "black"
+        ? (this.#endgameModalText.textContent = `${this.player1Name} WYGRYWA!`)
+        : (this.#endgameModalText.textContent = `${this.player2Name} WYGRYWA!`);
     }
   }
 }
