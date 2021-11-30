@@ -9,9 +9,22 @@ export class Timer extends UI {
     this.seconds = this.time % 60;
   }
 
+  redTimer = null;
+  blackTimer = null;
+
   createElement() {
     const element = `<span data-counter></span>`;
     return element;
+  }
+
+  generateRedTimer() {
+    this.redTimer = this.getElement(this.UISelectors.counter1);
+    this.redTimer.insertAdjacentHTML("beforeend", this.createElement());
+  }
+
+  generateBlackTimer() {
+    this.blackTimer = this.getElement(this.UISelectors.counter2);
+    this.blackTimer.insertAdjacentHTML("beforeend", this.createElement());
   }
 
   updateRedCountdown() {
@@ -20,11 +33,11 @@ export class Timer extends UI {
     this.redCounter.time % 60 > 9
       ? (this.redCounter.seconds = this.redCounter.time % 60)
       : (this.redCounter.seconds = `0${this.redCounter.time % 60}`);
-    this.redPlayer.firstChild.innerHTML = `${this.redCounter.minutes}
+    this.redTimer.firstChild.innerHTML = `${this.redCounter.minutes}
   : ${this.redCounter.seconds}`;
     this.redCounter.time < 60
-      ? (this.redPlayer.firstChild.style.color = "red")
-      : (this.redPlayer.firstChild.style.color = "black");
+      ? (this.redTimer.firstChild.style.color = "red")
+      : (this.redTimer.firstChild.style.color = "black");
     this.checkIfWin();
   }
 
@@ -34,23 +47,23 @@ export class Timer extends UI {
     this.blackCounter.time % 60 > 9
       ? (this.blackCounter.seconds = this.blackCounter.time % 60)
       : (this.blackCounter.seconds = `0${this.blackCounter.time % 60}`);
-    this.blackPlayer.firstChild.innerHTML = `${this.blackCounter.minutes}
+    this.blackTimer.firstChild.innerHTML = `${this.blackCounter.minutes}
   : ${this.blackCounter.seconds}`;
     this.blackCounter.time < 60
-      ? (this.blackPlayer.firstChild.style.color = "red")
-      : (this.blackPlayer.firstChild.style.color = "black");
+      ? (this.blackTimer.firstChild.style.color = "red")
+      : (this.blackTimer.firstChild.style.color = "black");
     this.checkIfWin();
   }
 
   renderTimers() {
     this.name1.innerHTML = "PLAYER 2";
     this.name2.innerHTML = "PLAYER 1";
-    this.redPlayer.firstChild.innerHTML = `${this.redCounter.minutes}
+    this.redTimer.firstChild.innerHTML = `${this.redCounter.minutes}
     : 0${this.redCounter.seconds}`;
-    this.blackPlayer.firstChild.innerHTML = `${this.blackCounter.minutes}
+    this.blackTimer.firstChild.innerHTML = `${this.blackCounter.minutes}
     : 0${this.blackCounter.seconds}`;
-    this.blackPlayer.firstChild.style.color = "black";
-    this.redPlayer.firstChild.style.color = "black";
+    this.blackTimer.firstChild.style.color = "black";
+    this.redTimer.firstChild.style.color = "black";
   }
 
   updateNames() {

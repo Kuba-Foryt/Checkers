@@ -7,6 +7,8 @@ export class Piece extends UI {
     this.element = null;
     this.isRed = null;
     this.isBlack = null;
+    this.isRedKing = null;
+    this.isBlackKing = null;
   }
 
   createRedPieceElement() {

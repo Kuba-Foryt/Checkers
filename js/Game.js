@@ -1,7 +1,8 @@
 import { UI } from "./UI.js";
-import { Cell } from "./Cell.js";
-import { Piece } from "./Piece.js";
+import { Board } from "./Board.js";
 import { Timer } from "./Timer.js";
+import { Players } from "./Players.js";
+import { ModalMustCapture } from "./ModalMustCapture.js";
 
 class Game extends UI {
   config = {
@@ -11,23 +12,23 @@ class Game extends UI {
     pieces: 24,
   };
 
-  #board = null;
-  cells = [];
-  #cellsElements = null;
-  #cellsElement = [];
+  board = new Board();
+  players = new Players();
+  modalMustCapture = new ModalMustCapture();
+
   #cellsToJump = [];
   #cellsToMove = [];
-  #cellsToCheck = [];
+  #cellsToClean = [];
   #cellsToMoveHandler = null;
   #cellsToKingMoveHandler = null;
   #cellsToJumpHandler = null;
 
-  #cellsToCheckKing = [];
+  #cellsToCleanKing = [];
   #cellsToJumpKing = [];
   #cellsToMoveKing = [];
-  #cellsToCheckKingMove = [];
+  #cellsToCleanKingMove = [];
+  #cellsToCleanMove = [];
 
-  #cellsToClean = [];
   #cellsToKingJumpHelper = [];
   #cellsToKingMoveHelper = [];
 
@@ -46,7 +47,6 @@ class Game extends UI {
 
   redPieces = [];
   blackPieces = [];
-  #pieces = [];
   #pieceCanJump = [];
 
   #black = [];
@@ -56,8 +56,8 @@ class Game extends UI {
   #turn = true;
   #winner = null;
 
-  redPlayer = null;
-  blackPlayer = null;
+  redTimer = null;
+  blackTimer = null;
   redCounter = null;
   blackCounter = null;
 
@@ -72,16 +72,9 @@ class Game extends UI {
   player2Name = null;
   name1 = null;
   name2 = null;
-  fas1 = null;
-  fas2 = null;
-  flag1 = null;
-  flag2 = null;
   languageBtn = null;
 
-  #captureModal = null;
-  #captureModalText = null;
   #captureModalLanguageBtn = null;
-  #captureModalBtn = null;
 
   #endgameModal = null;
   #endgameModalText = null;
@@ -93,19 +86,17 @@ class Game extends UI {
 
   initializeGame() {
     this.#handleElements();
+    this.board.createBoard();
+    this.players.launchPlayers();
+    this.modalMustCapture.init();
     this.#newGame();
   }
 
   #handleElements() {
-    this.#board = this.getElement(this.UISelectors.board);
-    this.redPlayer = this.getElement(this.UISelectors.counter1);
-    this.blackPlayer = this.getElement(this.UISelectors.counter2);
+    this.redTimer = this.getElement(this.UISelectors.counter1);
+    this.blackTimer = this.getElement(this.UISelectors.counter2);
     this.name1 = this.getElement(this.UISelectors.name1);
     this.name2 = this.getElement(this.UISelectors.name2);
-    this.fas1 = this.getElement(this.UISelectors.fas1);
-    this.fas2 = this.getElement(this.UISelectors.fas2);
-    this.flag1 = this.getElement(this.UISelectors.flag1);
-    this.flag2 = this.getElement(this.UISelectors.flag2);
     this.languageBtn = this.getElement(this.UISelectors.languageBtn);
     this.#starterModal = this.getElement(this.UISelectors.starterModal);
     this.#starterHeader = this.getElement(this.UISelectors.starterModalHeader);
@@ -115,12 +106,11 @@ class Game extends UI {
     this.starterPlayer1 = this.getElement(this.UISelectors.starterModalPlayer1);
     this.starterPlayer2 = this.getElement(this.UISelectors.starterModalPlayer2);
     this.#starterBtn = this.getElement(this.UISelectors.starterModalBtn);
-    this.#captureModal = this.getElement(this.UISelectors.captureModal);
-    this.#captureModalText = this.getElement(this.UISelectors.captureModalText);
+
     this.#captureModalLanguageBtn = this.getElement(
       this.UISelectors.captureModalLanguageBtn
     );
-    this.#captureModalBtn = this.getElement(this.UISelectors.captureModalBtn);
+
     this.#endgameModal = this.getElement(this.UISelectors.endgameModal);
     this.#endgameModalText = this.getElement(this.UISelectors.endgameModalText);
     this.#endgameModalBtn = this.getElement(this.UISelectors.endgameModalBtn);
@@ -130,16 +120,8 @@ class Game extends UI {
   }
 
   #newGame() {
-    this.#generateCells();
-    this.#renderBoard();
-    this.#colorBoard();
     this.#generateTimers();
     this.redCounter.renderTimers.bind(this)();
-    this.#generateRedPieces();
-    this.#generateBlackPieces();
-    this.#renderRedPieces();
-    this.#renderBlackPieces();
-    this.#addKingCreationCells();
     this.#starterBtn.addEventListener("click", this.#startGame.bind(this));
     this.#addBtnsEventListeners();
     // this.createCustomKings();
@@ -147,10 +129,10 @@ class Game extends UI {
 
   #startGame(e) {
     e.preventDefault();
+    this.createCustomKings();
     this.redCounter.updateNames.bind(this)();
     this.#starterModal.classList.add("starter__modal--hidden");
     this.languageBtn.classList.remove("languageButton--hidden");
-    this.#cellsElements = this.getElements(this.UISelectors.cell);
     this.#addBlackPiecesEventListeners();
     this.#addFlagsEventListeners();
     this.#redCountdown = setInterval(
@@ -169,27 +151,20 @@ class Game extends UI {
 
   #restartGame(e) {
     e.preventDefault();
-    this.cells = [];
+    this.board.cells = [];
     this.redCounter = null;
     this.blackCounter = null;
-    this.#generateCells();
-    this.#renderBoard();
-    this.#colorBoard();
+    this.board.createBoard();
     this.#generateTimers();
     this.redCounter.renderTimers.bind(this)();
     this.redCounter.updateNames.bind(this)();
-    this.#generateRedPieces();
-    this.#generateBlackPieces();
-    this.#renderRedPieces();
-    this.#renderBlackPieces();
-    this.#addKingCreationCells();
     this.#moveWithoutCapture = 0;
     this.winner = null;
     this.#turn = true;
     this.#popup = false;
     this.#endgameModal.classList.add("endgame__modal--hidden");
     this.languageBtn.classList.remove("languageButton--hidden");
-    this.#cellsElements = this.getElements(this.UISelectors.cell);
+    this.changeActivePlayerUI();
     this.#addBlackPiecesEventListeners();
     this.#blackCountdown = setInterval(
       this.blackCounter.updateBlackCountdown.bind(this),
@@ -197,158 +172,23 @@ class Game extends UI {
     );
   }
 
-  #generateCells() {
-    this.cells.length = 0;
-    this.cells.number = 1;
-    for (let n = 0; n < this.config.number; n++) {
-      this.cells.push(new Cell(this.cells.number));
-      this.cells.number++;
-    }
-  }
-
   #generateTimers() {
     this.redCounter = new Timer();
     this.blackCounter = new Timer();
-
-    this.redPlayer.insertAdjacentHTML(
-      "beforeend",
-      this.redCounter.createElement()
-    );
-    this.blackPlayer.insertAdjacentHTML(
-      "beforeend",
-      this.blackCounter.createElement()
-    );
-  }
-
-  #renderBoard() {
-    while (this.#board.firstChild) {
-      this.#board.removeChild(this.#board.lastChild);
-    }
-    this.cells.forEach((cell) => {
-      this.#board.insertAdjacentHTML("beforeend", cell.createElement());
-      cell.element = cell.getElement(cell.selector);
-    });
-  }
-
-  #colorBoard() {
-    let brownCell = 1;
-
-    while (brownCell < this.config.number) {
-      const cell = this.cells[brownCell];
-      cell.isBrown = true;
-      cell.brownCell();
-      brownCell += 2;
-
-      if (
-        brownCell == 9 ||
-        brownCell == 25 ||
-        brownCell == 41 ||
-        brownCell == 57
-      ) {
-        brownCell--;
-      } else if (brownCell == 16 || brownCell == 32 || brownCell == 48) {
-        brownCell++;
-      }
-    }
-  }
-
-  #addKingCreationCells() {
-    const kingCells = [1, 3, 5, 7, 56, 58, 60, 62];
-
-    for (let i = 0; i < 4; i++) {
-      let cell = this.cells[kingCells[i]];
-      cell.element.classList.add("blackKingCell");
-    }
-    for (let i = 4; i < 8; i++) {
-      let cell = this.cells[kingCells[i]];
-      cell.element.classList.add("redKingCell");
-    }
-  }
-
-  #generateRedPieces() {
-    this.redPieces.length = 0;
-    this.redPieces.number = 2;
-    for (let n = 0; n < this.config.pieces; n += 2) {
-      this.redPieces.push(new Piece(this.redPieces.number));
-      if (this.redPieces.number == 8) {
-        this.redPieces.number--;
-      } else if (this.redPieces.number == 15) {
-        this.redPieces.number++;
-      }
-      this.redPieces.number += 2;
-    }
-    this.#pieces.push(...this.redPieces);
-  }
-
-  #generateBlackPieces() {
-    this.blackPieces.length = 0;
-    this.blackPieces.number = 41;
-    for (let n = 41; n < this.config.number; n += 2) {
-      this.blackPieces.push(new Piece(this.blackPieces.number));
-      if (this.blackPieces.number == 56) {
-        this.blackPieces.number--;
-      } else if (this.blackPieces.number == 47) {
-        this.blackPieces.number++;
-      }
-      this.blackPieces.number += 2;
-    }
-    this.#pieces.push(...this.blackPieces);
-  }
-
-  #renderRedPieces() {
-    this.redPieces.forEach((piece) => {
-      const index = piece["n"];
-      piece.isRed = true;
-      this.cells[index - 1].element.insertAdjacentHTML(
-        "beforeend",
-        piece.createRedPieceElement()
-      );
-      this.cells[index - 1].hasPiece = true;
-      this.cells[index - 1].hasRed = true;
-      this.cells[index - 1].element.classList.add("hasPiece");
-      piece.element = piece.getElement(piece.selector);
-    });
-  }
-
-  #renderBlackPieces() {
-    this.blackPieces.forEach((piece) => {
-      const index = piece["n"];
-      piece.isBlack = true;
-      this.cells[index - 1].element.insertAdjacentHTML(
-        "beforeend",
-        piece.createBlackPieceElement()
-      );
-      this.cells[index - 1].hasPiece = true;
-      this.cells[index - 1].hasBlack = true;
-      this.cells[index - 1].element.classList.add("hasPiece");
-      piece.element = piece.getElement(piece.selector);
-    });
+    this.redCounter.generateRedTimer();
+    this.blackCounter.generateBlackTimer();
   }
 
   createCustomKings() {
-    this.cells[44].element.firstChild.classList.add("blackKing");
-    this.cells[46].element.firstChild.classList.add("blackKing");
-    this.cells[19].element.firstChild.classList.add("redKing");
-  }
-
-  #hideFas() {
-    if (this.#turn) {
-      this.fas1.classList.add("player1__fas--hidden");
-      this.fas2.classList.remove("player2__fas--hidden");
-      this.flag1.classList.add("player1__fas--hidden");
-      this.flag2.classList.remove("player2__fas--hidden");
-    } else {
-      this.fas1.classList.remove("player1__fas--hidden");
-      this.fas2.classList.add("player2__fas--hidden");
-      this.flag1.classList.remove("player1__fas--hidden");
-      this.flag2.classList.add("player2__fas--hidden");
-    }
+    this.board.cells[44].element.firstChild.classList.add("blackKing");
+    this.board.cells[46].element.firstChild.classList.add("blackKing");
+    this.board.cells[19].element.firstChild.classList.add("redKing");
   }
 
   #addBtnsEventListeners() {
     this.#starterLanguageBtn.addEventListener(
       "click",
-      this.#changeLanguage.bind(this)
+      this.changeLanguage.bind(this)
     );
     this.#endgameModalBtn.addEventListener(
       "click",
@@ -356,28 +196,25 @@ class Game extends UI {
     );
     this.#endgameModalLanguageBtn.addEventListener(
       "click",
-      this.#changeLanguage.bind(this)
+      this.changeLanguage.bind(this)
     );
-    this.languageBtn.addEventListener("click", this.#changeLanguage.bind(this));
-    this.#captureModalBtn.addEventListener(
-      "click",
-      this.#hideCapturePopup.bind(this)
-    );
+
     this.#captureModalLanguageBtn.addEventListener(
       "click",
-      this.#changeLanguage.bind(this)
+      this.changeLanguage.bind(this)
     );
+    this.languageBtn.addEventListener("click", this.changeLanguage.bind(this));
+    this.modalMustCapture.addEventListeners();
   }
 
   #addFlagsEventListeners() {
-    this.flag1.addEventListener("click", this.#giveUpGame.bind(this));
-    this.flag2.addEventListener("click", this.#giveUpGame.bind(this));
+    this.players.flag1.addEventListener("click", this.#giveUpGame.bind(this));
+    this.players.flag2.addEventListener("click", this.#giveUpGame.bind(this));
   }
 
   #addBlackPiecesEventListeners() {
     this.#red = document.querySelectorAll(".red");
     this.#black = document.querySelectorAll(".black");
-    this.#turn = true;
     this.#redAmount = this.#red.length;
     this.#blackAmount = this.#black.length;
     this.#black.forEach((element) => {
@@ -386,12 +223,11 @@ class Game extends UI {
     this.#red.forEach((element) => {
       element.removeEventListener("click", this.#handleCellClick);
     });
-    this.#hideFas();
   }
+
   #addRedPiecesEventListeners() {
     this.#red = document.querySelectorAll(".red");
     this.#black = document.querySelectorAll(".black");
-    this.#turn = false;
     this.#redAmount = this.#red.length;
     this.#blackAmount = this.#black.length;
     this.#red.forEach((element) => {
@@ -400,7 +236,34 @@ class Game extends UI {
     this.#black.forEach((element) => {
       element.removeEventListener("click", this.#handleCellClick);
     });
-    this.#hideFas();
+  }
+
+  #reloadPiecesEventListeners() {
+    this.#turn
+      ? this.#addBlackPiecesEventListeners()
+      : this.#addRedPiecesEventListeners();
+  }
+
+  changeTurn() {
+    if (this.#turn) {
+      this.#turn = false;
+      this.#addRedPiecesEventListeners();
+      this.#redCountdown = setInterval(
+        this.redCounter.updateRedCountdown.bind(this),
+        1000
+      );
+      this.changeActivePlayerUI();
+      clearInterval(this.#blackCountdown);
+    } else if (!this.#turn) {
+      this.#turn = true;
+      this.#addBlackPiecesEventListeners();
+      this.#blackCountdown = setInterval(
+        this.blackCounter.updateBlackCountdown.bind(this),
+        1000
+      );
+      this.changeActivePlayerUI();
+      clearInterval(this.#redCountdown);
+    }
   }
 
   #handleCellClick = (e) => {
@@ -419,18 +282,13 @@ class Game extends UI {
       );
     }
 
-    if (this.#turn) {
-      this.#addBlackPiecesEventListeners();
-    } else if (!this.#turn) {
-      this.#addRedPiecesEventListeners();
-    }
-
     if (this.#cellsToJump.length) {
       this.#cellsToJump.forEach((element) =>
         element.element.classList.remove("possibleJump")
       );
     }
 
+    this.#reloadPiecesEventListeners();
     this.#cleanMemoryClick();
     this.#pieceCanJump = [];
     this.#checkIfAnyJumpIsPossible();
@@ -441,32 +299,21 @@ class Game extends UI {
       this.#selectedPiece.target.getAttribute("data-n"),
       10
     );
-
-    this.#selectedPiece.cell = this.cells[this.#selectedPiece.index - 1];
+    this.#selectedPiece.cell = this.board.cells[this.#selectedPiece.index - 1];
     this.#selectedPiece.target.classList.add("selected");
-    console.log(this.#selectedPiece.target);
 
-    if (
-      this.#selectedPiece.target.classList.contains("blackKing") ||
-      this.#selectedPiece.target.classList.contains("redKing")
-    ) {
-      this.#checkPossibleKingJump(this.#selectedPiece.index);
-    } else {
-      this.#checkPossibleJump(this.#selectedPiece.index);
-    }
+    this.#selectedPiece.target.classList.contains("blackKing") ||
+    this.#selectedPiece.target.classList.contains("redKing")
+      ? this.#checkPossibleKingJump(this.#selectedPiece.index)
+      : this.#checkPossibleJump(this.#selectedPiece.index);
   };
 
   #checkIfAnyJumpIsPossible() {
     let piecesToCheck = [];
-    if (this.#turn) {
-      piecesToCheck = this.#black;
-    } else if (!this.#turn) {
-      piecesToCheck = this.#red;
-    }
+    this.#turn ? (piecesToCheck = this.#black) : (piecesToCheck = this.#red);
 
     for (let i = 0; i < piecesToCheck.length; i++) {
       const index = parseInt(piecesToCheck[i].getAttribute("data-n"), 10);
-
       if (
         piecesToCheck[i].classList.contains("blackKing") ||
         piecesToCheck[i].classList.contains("redKing")
@@ -476,24 +323,18 @@ class Game extends UI {
           this.#pieceCanJump.push(piecesToCheck[i]);
         }
         this.#cellsToJump = [];
-        this.#cellsToCheck = [];
+        this.#cellsToClean = [];
         this.#cellsToJumpKing = [];
-        this.#cellsToCheckKing = [];
+        this.#cellsToCleanKing = [];
       } else {
         this.#checkIfAnyPossiblePieceJump(index);
         if (this.#cellsToJump.length) {
           this.#pieceCanJump.push(piecesToCheck[i]);
         }
         this.#cellsToJump = [];
-        this.#cellsToCheck = [];
+        this.#cellsToClean = [];
       }
     }
-  }
-
-  #hideCapturePopup(e) {
-    e.preventDefault();
-    this.#captureModal.classList.add("mustCapture__modal--hidden");
-    this.languageBtn.classList.remove("languageButton--hidden");
   }
 
   #checkPossibleKingJump(index) {
@@ -518,64 +359,26 @@ class Game extends UI {
 
   #checkPossibleKingJumpHandler(index) {
     const kingJumpBoard = [
-      index - 19,
-      index - 28,
-      index - 37,
-      index - 46,
-      index - 55,
-      index - 15,
-      index - 22,
-      index - 29,
-      index - 36,
-      index - 43,
-      index - 50,
-      index + 13,
-      index + 20,
-      index + 27,
-      index + 34,
-      index + 41,
-      index + 48,
-      index + 17,
-      index + 26,
-      index + 35,
-      index + 44,
-      index + 53,
+      -19, -28, -37, -46, -55, -15, -22, -29, -36, -43, -50, 13, 20, 27, 34, 41,
+      48, 17, 26, 35, 44, 53,
     ];
 
     const kingCheckBoard = [
-      index - 10,
-      index - 19,
-      index - 28,
-      index - 37,
-      index - 46,
-      index - 8,
-      index - 15,
-      index - 22,
-      index - 29,
-      index - 36,
-      index - 43,
-      index + 6,
-      index + 13,
-      index + 20,
-      index + 27,
-      index + 34,
-      index + 41,
-      index + 8,
-      index + 17,
-      index + 26,
-      index + 35,
-      index + 44,
+      -10, -19, -28, -37, -46, -8, -15, -22, -29, -36, -43, 6, 13, 20, 27, 34,
+      41, 8, 17, 26, 35, 44,
     ];
 
     for (let i = 0; i < kingJumpBoard.length; i++) {
-      kingJumpBoard[i] > 0 && kingJumpBoard[i] < 63
-        ? this.#cellsToJumpKing.push(this.cells[kingJumpBoard[i]])
-        : this.#cellsToJumpKing.push(this.cells[0]);
+      kingJumpBoard[i] + index > 0 && kingJumpBoard[i] + index < 63
+        ? this.#cellsToJumpKing.push(this.board.cells[kingJumpBoard[i] + index])
+        : this.#cellsToJumpKing.push(this.board.cells[0]);
     }
     for (let i = 0; i < kingCheckBoard.length; i++) {
-      kingCheckBoard[i] > 0 && kingCheckBoard[i] < 63
-        ? this.#cellsToCheckKing.push(this.cells[kingCheckBoard[i]])
-        : this.#cellsToCheckKing.push(this.cells[0]);
+      kingCheckBoard[i] + index > 0 && kingCheckBoard[i] + index < 63
+        ? this.#cellsToCleanKing.push(
+            this.board.cells[kingCheckBoard[i] + index]
+          )
+        : this.#cellsToCleanKing.push(this.board.cells[0]);
     }
 
     //left up
@@ -600,12 +403,11 @@ class Game extends UI {
   }
 
   #checkPossibleKingMove() {
-    this.#cellsToMoveKing = this.#cellsToCheckKing;
+    this.#cellsToMoveKing = this.#cellsToCleanKing;
     this.#cellsToMoveKing.splice(5, 0, this.#cellsToJumpKing[4]);
     this.#cellsToMoveKing.splice(12, 0, this.#cellsToJumpKing[10]);
     this.#cellsToMoveKing.splice(19, 0, this.#cellsToJumpKing[16]);
     this.#cellsToMoveKing.push(this.#cellsToJumpKing[21]);
-    console.log(this.#cellsToMoveKing);
 
     // left up
     for (let i = 0; i < 6; i++) {
@@ -666,6 +468,20 @@ class Game extends UI {
     );
   }
 
+  #renderMove(cell, index, pickedPiece, i) {
+    this.#cellsToMove[i].hasPiece = true;
+    this.#cellsToMove[i].element.appendChild(pickedPiece);
+    index = this.#cellsToMove[i].n;
+    pickedPiece.setAttribute("data-n", index);
+    if (this.#turn) {
+      cell.hasBlack = null;
+      this.#cellsToMove[i].hasBlack = true;
+    } else {
+      cell.hasRed = null;
+      this.#cellsToMove[i].hasRed = true;
+    }
+  }
+
   #moveKing(cell, index, target, pickedPiece, e) {
     this.#selectedPiece.option = e.target;
 
@@ -677,7 +493,7 @@ class Game extends UI {
         this.#pieceCanJump[i].classList.add("canJump");
       }
       if (!this.#popup) {
-        this.#captureModal.classList.remove("mustCapture__modal--hidden");
+        this.modalMustCapture.revealCaptureModalPopup();
         this.languageBtn.classList.add("languageButton--hidden");
         this.#popup = !this.#popup;
       }
@@ -700,28 +516,13 @@ class Game extends UI {
           element.element.classList.remove("possibleMove")
         );
       }
-      if (this.#turn) {
-        this.#addBlackPiecesEventListeners();
-      } else if (!this.#turn) {
-        this.#addRedPiecesEventListeners();
-      }
+      this.#reloadPiecesEventListeners();
       return;
     }
 
     for (let i = 0; i < this.#cellsToMove.length; i++) {
       if (this.#selectedPiece.option === this.#cellsToMove[i].element) {
-        this.#cellsToMove[i].hasPiece = true;
-        this.#cellsToMove[i].element.appendChild(pickedPiece);
-        this.#cellsToMove[i].element.classList.add("hasPiece");
-        index = this.#cellsToMove[i].n;
-        pickedPiece.setAttribute("data-n", index);
-        if (this.#turn) {
-          cell.hasBlack = null;
-          this.#cellsToMove[i].hasBlack = true;
-        } else {
-          cell.hasRed = null;
-          this.#cellsToMove[i].hasRed = true;
-        }
+        this.#renderMove(cell, index, pickedPiece, i);
       }
     }
 
@@ -732,20 +533,15 @@ class Game extends UI {
       );
 
       this.#cleanMemoryClick();
-
-      if (this.#turn) {
-        this.#addBlackPiecesEventListeners();
-      } else if (!this.#turn) {
-        this.#addRedPiecesEventListeners();
-      }
+      this.#reloadPiecesEventListeners();
       return;
     }
+
     this.#selectedPiece.target.removeEventListener(
       "click",
       this.#cellsToKingMoveHandler
     );
     target.classList.remove("selected");
-    this.#selectedPiece.cell.element.classList.remove("hasPiece");
 
     this.#cellsToMove.forEach((element) =>
       element.element.removeEventListener("click", this.#cellsToKingMoveHandler)
@@ -758,22 +554,7 @@ class Game extends UI {
 
     this.#moveWithoutCapture++;
 
-    if (this.#turn) {
-      this.#addRedPiecesEventListeners();
-      this.#redCountdown = setInterval(
-        this.redCounter.updateRedCountdown.bind(this),
-        1000
-      );
-      clearInterval(this.#blackCountdown);
-    } else if (!this.#turn) {
-      this.#addBlackPiecesEventListeners();
-      this.#blackCountdown = setInterval(
-        this.blackCounter.updateBlackCountdown.bind(this),
-        1000
-      );
-      clearInterval(this.#redCountdown);
-    }
-
+    this.changeTurn();
     this.checkIfWin();
   }
 
@@ -900,17 +681,17 @@ class Game extends UI {
 
   #checkOverjumpedCells(j) {
     if (
-      this.#cellsToCheckKing[j].isBrown &&
-      this.#cellsToCheckKing[j].hasPiece &&
-      ((this.#turn && this.#cellsToCheckKing[j].hasRed) ||
-        (!this.#turn && this.#cellsToCheckKing[j].hasBlack))
+      this.#cellsToCleanKing[j].isBrown &&
+      this.#cellsToCleanKing[j].hasPiece &&
+      ((this.#turn && this.#cellsToCleanKing[j].hasRed) ||
+        (!this.#turn && this.#cellsToCleanKing[j].hasBlack))
     ) {
       this.#cellsToKingJumpHelper.push(1);
     } else if (
-      this.#cellsToCheckKing[j].isBrown &&
-      this.#cellsToCheckKing[j].hasPiece &&
-      ((this.#turn && this.#cellsToCheckKing[j].hasBlack) ||
-        (!this.#turn && this.#cellsToCheckKing[j].hasRed))
+      this.#cellsToCleanKing[j].isBrown &&
+      this.#cellsToCleanKing[j].hasPiece &&
+      ((this.#turn && this.#cellsToCleanKing[j].hasBlack) ||
+        (!this.#turn && this.#cellsToCleanKing[j].hasRed))
     ) {
       this.#cellsToKingJumpHelper.push(2);
     } else this.#cellsToKingJumpHelper.push(0);
@@ -936,25 +717,25 @@ class Game extends UI {
           cleanIndex += 17;
         }
 
-        this.#cellsToClean.push(this.#cellsToCheckKing[cleanIndex]);
+        this.#cellsToClean.push(this.#cellsToCleanKing[cleanIndex]);
       }
       this.#cellsToKingJumpHelper = [];
     }
   }
   #checkIfAnyPossiblePieceJump(index) {
-    const pieceJumpBoard = [index - 19, index - 15, index + 13, index + 17];
+    const pieceJumpBoard = [-19, -15, 13, 17];
 
-    const pieceCheckBoard = [index - 10, index - 8, index + 6, index + 8];
+    const pieceCheckBoard = [-10, -8, 6, 8];
 
     for (let i = 0; i < pieceJumpBoard.length; i++) {
       if (
-        pieceJumpBoard[i] > 0 &&
-        pieceJumpBoard[i] < 63 &&
-        pieceCheckBoard[i] > 0 &&
-        pieceCheckBoard[i] < 63
+        pieceJumpBoard[i] + index > 0 &&
+        pieceJumpBoard[i] + index < 63 &&
+        pieceCheckBoard[i] + index > 0 &&
+        pieceCheckBoard[i] + index < 63
       ) {
-        this.#cellsToJump.push(this.cells[pieceJumpBoard[i]]);
-        this.#cellsToCheck.push(this.cells[pieceCheckBoard[i]]);
+        this.#cellsToJump.push(this.board.cells[pieceJumpBoard[i] + index]);
+        this.#cellsToClean.push(this.board.cells[pieceCheckBoard[i] + index]);
       }
     }
 
@@ -962,51 +743,51 @@ class Game extends UI {
       if (
         !(
           this.#cellsToJump[i].isBrown &&
-          this.#cellsToCheck[i].isBrown &&
-          this.#cellsToCheck[i].hasPiece &&
+          this.#cellsToClean[i].isBrown &&
+          this.#cellsToClean[i].hasPiece &&
           !this.#cellsToJump[i].hasPiece &&
-          ((this.#turn && this.#cellsToCheck[i].hasRed) ||
-            (!this.#turn && this.#cellsToCheck[i].hasBlack))
+          ((this.#turn && this.#cellsToClean[i].hasRed) ||
+            (!this.#turn && this.#cellsToClean[i].hasBlack))
         )
       ) {
         const index = this.#cellsToJump.indexOf(this.#cellsToJump[i]);
         this.#cellsToJump.splice(index, 1);
-        this.#cellsToCheck.splice(index, 1);
+        this.#cellsToClean.splice(index, 1);
         i--;
       }
     }
   }
   #selectPossibleJumpSpots(index) {
-    const pieceJumpBoard = [index - 19, index - 15, index + 13, index + 17];
+    const pieceJumpBoard = [-19, -15, 13, 17];
 
-    const pieceCheckBoard = [index - 10, index - 8, index + 6, index + 8];
+    const pieceCheckBoard = [-10, -8, 6, 8];
 
     for (let i = 0; i < pieceJumpBoard.length; i++) {
       if (
-        pieceJumpBoard[i] > 0 &&
-        pieceJumpBoard[i] < 63 &&
-        pieceCheckBoard[i] > 0 &&
-        pieceCheckBoard[i] < 63
+        pieceJumpBoard[i] + index > 0 &&
+        pieceJumpBoard[i] + index < 63 &&
+        pieceCheckBoard[i] + index > 0 &&
+        pieceCheckBoard[i] + index < 63
       ) {
-        this.#cellsToJump.push(this.cells[pieceJumpBoard[i]]);
-        this.#cellsToCheck.push(this.cells[pieceCheckBoard[i]]);
+        this.#cellsToJump.push(this.board.cells[pieceJumpBoard[i] + index]);
+        this.#cellsToClean.push(this.board.cells[pieceCheckBoard[i] + index]);
       }
     }
 
     for (let i = 0; i < this.#cellsToJump.length; i++) {
       if (
         this.#cellsToJump[i].isBrown &&
-        this.#cellsToCheck[i].isBrown &&
-        this.#cellsToCheck[i].hasPiece &&
+        this.#cellsToClean[i].isBrown &&
+        this.#cellsToClean[i].hasPiece &&
         !this.#cellsToJump[i].hasPiece &&
-        ((this.#turn && this.#cellsToCheck[i].hasRed) ||
-          (!this.#turn && this.#cellsToCheck[i].hasBlack))
+        ((this.#turn && this.#cellsToClean[i].hasRed) ||
+          (!this.#turn && this.#cellsToClean[i].hasBlack))
       ) {
         this.#cellsToJump[i].element.classList.add("possibleJump");
       } else {
         const index = this.#cellsToJump.indexOf(this.#cellsToJump[i]);
         this.#cellsToJump.splice(index, 1);
-        this.#cellsToCheck.splice(index, 1);
+        this.#cellsToClean.splice(index, 1);
         i--;
       }
     }
@@ -1072,24 +853,7 @@ class Game extends UI {
 
     for (let i = 0; i < this.#cellsToJump.length; i++) {
       if (this.#selectedPiece.option === this.#cellsToJump[i].element) {
-        this.#cellsToJump[i].hasPiece = true;
-        this.#cellsToJump[i].element.appendChild(pickedPiece);
-        this.#cellsToJump[i].element.classList.add("hasPiece");
-        this.#cellsToClean[i].hasPiece = false;
-        this.#cellsToClean[i].element.classList.remove("hasPiece");
-        this.#cellsToClean[i].element.firstChild.remove();
-
-        if (this.#turn) {
-          cell.hasBlack = null;
-          this.#cellsToClean[i].hasRed = null;
-          this.#cellsToJump[i].hasBlack = true;
-        } else {
-          cell.hasRed = null;
-          this.#cellsToClean[i].hasBlack = null;
-          this.#cellsToJump[i].hasRed = true;
-        }
-        index = this.#cellsToJump[i].n;
-        pickedPiece.setAttribute("data-n", index);
+        this.#renderJump(cell, index, pickedPiece, i);
       }
     }
 
@@ -1100,19 +864,13 @@ class Game extends UI {
       );
 
       this.#cleanMemoryClick();
-
-      if (this.#turn) {
-        this.#addBlackPiecesEventListeners();
-      } else if (!this.#turn) {
-        this.#addRedPiecesEventListeners();
-      }
+      this.#reloadPiecesEventListeners();
       return;
     }
     this.#selectedPiece.target.removeEventListener(
       "click",
       this.#cellsToJumpHandler
     );
-    this.#selectedPiece.cell.element.classList.remove("hasPiece");
     cell.hasPiece = null;
     target.classList.remove("selected");
 
@@ -1125,40 +883,40 @@ class Game extends UI {
 
     this.#moveWithoutCapture = 0;
 
-    if (this.#turn) {
-      this.#redAmount--;
-    } else if (!this.#turn) {
-      this.#blackAmount--;
-    }
-
-    console.log(this.#redAmount, this.#blackAmount);
+    this.#updateAmountOfPieces();
 
     this.#checkIfNextKingJumpIsPossible(pickedPiece);
 
     this.checkIfWin();
   }
 
+  #renderJump(cell, index, pickedPiece, i) {
+    console.log(this.#cellsToJump[i], this.#cellsToClean[i]);
+    this.#cellsToJump[i].hasPiece = true;
+    this.#cellsToJump[i].element.appendChild(pickedPiece);
+    this.#cellsToClean[i].hasPiece = false;
+    this.#cellsToClean[i].element.firstChild.remove();
+
+    if (this.#turn) {
+      cell.hasBlack = null;
+      this.#cellsToClean[i].hasRed = null;
+      this.#cellsToJump[i].hasBlack = true;
+      this.#cellsToJump[i].hasPiece = true;
+    } else {
+      cell.hasRed = null;
+      this.#cellsToClean[i].hasBlack = null;
+      this.#cellsToJump[i].hasRed = true;
+      this.#cellsToJump[i].hasPiece = true;
+    }
+    index = this.#cellsToJump[i].n;
+    pickedPiece.setAttribute("data-n", index);
+  }
+
   #jumpPiece(cell, index, target, pickedPiece, e) {
     this.#selectedPiece.option = e.target;
     for (let i = 0; i < this.#cellsToJump.length; i++) {
       if (this.#selectedPiece.option === this.#cellsToJump[i].element) {
-        this.#cellsToJump[i].hasPiece = true;
-        this.#cellsToJump[i].element.appendChild(pickedPiece);
-        this.#cellsToJump[i].element.classList.add("hasPiece");
-        this.#cellsToCheck[i].hasPiece = false;
-        this.#cellsToCheck[i].element.classList.remove("hasPiece");
-        this.#cellsToCheck[i].element.firstChild.remove();
-        if (this.#turn) {
-          cell.hasBlack = null;
-          this.#cellsToCheck[i].hasRed = null;
-          this.#cellsToJump[i].hasBlack = true;
-        } else {
-          cell.hasRed = null;
-          this.#cellsToCheck[i].hasBlack = null;
-          this.#cellsToJump[i].hasRed = true;
-        }
-        index = this.#cellsToJump[i].n;
-        pickedPiece.setAttribute("data-n", index);
+        this.#renderJump(cell, index, pickedPiece, i);
       }
 
       if (this.#selectedPiece.option === this.#selectedPiece.target) {
@@ -1168,20 +926,11 @@ class Game extends UI {
         );
 
         this.#cleanMemoryClick();
-
-        if (this.#turn) {
-          this.#addBlackPiecesEventListeners();
-        } else if (!this.#turn) {
-          this.#addRedPiecesEventListeners();
-        }
+        this.#reloadPiecesEventListeners();
         return;
       }
 
-      if (this.#turn) {
-        this.#redAmount--;
-      } else {
-        this.#blackAmount--;
-      }
+      this.#updateAmountOfPieces();
 
       console.log(this.#redAmount, this.#blackAmount);
     }
@@ -1190,7 +939,6 @@ class Game extends UI {
       "click",
       this.#cellsToJumpHandler
     );
-    this.#selectedPiece.cell.element.classList.remove("hasPiece");
     cell.hasPiece = null;
     target.classList.remove("selected");
 
@@ -1219,7 +967,7 @@ class Game extends UI {
       10
     );
 
-    this.#selectedPiece.cell = this.cells[this.#selectedPiece.index - 1];
+    this.#selectedPiece.cell = this.board.cells[this.#selectedPiece.index - 1];
     this.#selectedPiece.target.classList.add("selected");
 
     this.#checkPossibleNextKingJump(this.#selectedPiece.index);
@@ -1238,21 +986,7 @@ class Game extends UI {
         this.#cellsToJumpHandler
       );
       this.#cleanMemoryClick();
-      if (this.#turn) {
-        this.#addRedPiecesEventListeners();
-        this.#redCountdown = setInterval(
-          this.redCounter.updateRedCountdown.bind(this),
-          1000
-        );
-        clearInterval(this.#blackCountdown);
-      } else if (!this.#turn) {
-        this.#addBlackPiecesEventListeners();
-        this.#blackCountdown = setInterval(
-          this.blackCounter.updateBlackCountdown.bind(this),
-          1000
-        );
-        clearInterval(this.#redCountdown);
-      }
+      this.changeTurn();
       return;
     }
 
@@ -1274,7 +1008,7 @@ class Game extends UI {
       10
     );
 
-    this.#selectedPiece.cell = this.cells[this.#selectedPiece.index - 1];
+    this.#selectedPiece.cell = this.board.cells[this.#selectedPiece.index - 1];
     this.#selectedPiece.target.classList.add("selected");
 
     this.#checkPossibleNextJump(
@@ -1294,21 +1028,7 @@ class Game extends UI {
         this.#cellsToJumpHandler
       );
       this.#cleanMemoryClick();
-      if (this.#turn) {
-        this.#addRedPiecesEventListeners();
-        this.#redCountdown = setInterval(
-          this.redCounter.updateRedCountdown.bind(this),
-          1000
-        );
-        clearInterval(this.#blackCountdown);
-      } else if (!this.#turn) {
-        this.#addBlackPiecesEventListeners();
-        this.#blackCountdown = setInterval(
-          this.blackCounter.updateBlackCountdown.bind(this),
-          1000
-        );
-        clearInterval(this.#redCountdown);
-      }
+      this.changeTurn();
       return;
     }
 
@@ -1321,32 +1041,19 @@ class Game extends UI {
   }
 
   #checkPossibleMove(index) {
-    if (this.#turn) {
-      index - 8 > 0 && index - 8 < 63
-        ? this.#cellsToMove.push(this.cells[index - 8])
-        : this.#cellsToMove.push(this.cells[0]);
-      index - 10 > 0 && index - 10 < 63
-        ? this.#cellsToMove.push(this.cells[index - 10])
-        : this.#cellsToMove.push(this.cells[0]);
-    } else {
-      index + 6 > 0 && index + 6 < 63
-        ? this.#cellsToMove.push(this.cells[index + 6])
-        : this.#cellsToMove.push(this.cells[0]);
-      index + 8 > 0 && index + 8 < 63
-        ? this.#cellsToMove.push(this.cells[index + 8])
-        : this.#cellsToMove.push(this.cells[0]);
-    }
+    this.#turn
+      ? (this.#cellsToCleanMove = [index - 8, index - 10])
+      : (this.#cellsToCleanMove = [index + 6, index + 8]);
 
-    console.log(this.#cellsToMove);
-    for (let i = 0; i < this.#cellsToMove.length; i++) {
-      if (this.#cellsToMove[i].isBrown && !this.#cellsToMove[i].hasPiece) {
-        this.#cellsToMove[i].element.classList.add("possibleMove");
-      } else {
-        const index = this.#cellsToMove.indexOf(this.#cellsToMove[i]);
-        this.#cellsToMove.splice(index, 1);
-        i--;
-      }
-    }
+    this.#cellsToCleanMove.forEach((cellIndex) =>
+      cellIndex > 0 &&
+      cellIndex < 63 &&
+      this.board.cells[cellIndex].isBrown &&
+      !this.board.cells[cellIndex].hasPiece
+        ? this.#cellsToMove.push(this.board.cells[cellIndex]) &&
+          this.board.cells[cellIndex].element.classList.add("possibleMove")
+        : null
+    );
 
     if (!this.#cellsToMove.length) {
       this.#selectedPiece.target.classList.remove("selected");
@@ -1394,12 +1101,11 @@ class Game extends UI {
       for (let i = 0; i < this.#pieceCanJump.length; i++) {
         this.#pieceCanJump[i].classList.add("canJump");
       }
-
       if (!this.#popup) {
-        this.#captureModal.classList.remove("mustCapture__modal--hidden");
+        this.modalMustCapture.revealCaptureModalPopup();
+        this.languageBtn.classList.add("languageButton--hidden");
         this.#popup = !this.#popup;
       }
-
       if (this.#selectedPiece.target) {
         this.#selectedPiece.target.classList.remove("selected");
       }
@@ -1419,86 +1125,50 @@ class Game extends UI {
           element.element.classList.remove("possibleMove")
         );
       }
-      if (this.#turn) {
-        this.#addBlackPiecesEventListeners();
-      } else if (!this.#turn) {
-        this.#addRedPiecesEventListeners();
-      }
+      this.#reloadPiecesEventListeners();
       return;
     }
 
-    console.log(this.#selectedPiece.target);
     for (let i = 0; i < this.#cellsToMove.length; i++) {
       if (this.#selectedPiece.option === this.#cellsToMove[i].element) {
-        this.#cellsToMove[i].hasPiece = true;
-        this.#cellsToMove[i].element.appendChild(pickedPiece);
-        this.#cellsToMove[i].element.classList.add("hasPiece");
-        index = this.#cellsToMove[i].n;
-        pickedPiece.setAttribute("data-n", index);
-        if (this.#turn) {
-          cell.hasBlack = null;
-          this.#cellsToMove[i].hasBlack = true;
-        } else {
-          cell.hasRed = null;
-          this.#cellsToMove[i].hasRed = true;
-        }
+        this.#renderMove(cell, index, pickedPiece, i);
       }
     }
 
     if (this.#selectedPiece.option === this.#selectedPiece.target) {
       this.#selectedPiece.target.removeEventListener(
         "click",
-        this.#cellsToMoveHandler
+        this.#cellsToKingMoveHandler
       );
 
       this.#cleanMemoryClick();
-
-      if (this.#turn) {
-        this.#addBlackPiecesEventListeners();
-      } else if (!this.#turn) {
-        this.#addRedPiecesEventListeners();
-      }
+      this.#reloadPiecesEventListeners();
       return;
     }
+
     this.#checkIfMoveCreatesKing(
       this.#selectedPiece.option,
       this.#selectedPiece.pickedPiece
     );
 
-    pickedPiece.setAttribute("data-n", index);
-
-    cell.element.classList.remove("hasPiece");
-    cell.hasPiece = null;
-
-    this.#cellsToMove.forEach((i) =>
-      i.element.classList.remove("possibleMove")
-    );
     this.#selectedPiece.target.removeEventListener(
       "click",
-      this.#cellsToMoveHandler
+      this.#cellsToKingMoveHandler
+    );
+    this.#selectedPiece.target.classList.remove("selected");
+
+    this.#cellsToMove.forEach((element) =>
+      element.element.removeEventListener("click", this.#cellsToKingMoveHandler)
     );
     this.#cellsToMove.forEach((element) =>
-      element.element.removeEventListener("click", this.#cellsToMoveHandler)
+      element.element.classList.remove("possibleMove")
     );
+
+    cell.hasPiece = null;
 
     this.#moveWithoutCapture++;
 
-    if (this.#turn) {
-      this.#addRedPiecesEventListeners();
-      this.#redCountdown = setInterval(
-        this.redCounter.updateRedCountdown.bind(this),
-        1000
-      );
-      clearInterval(this.#blackCountdown);
-    } else if (!this.#turn) {
-      this.#addBlackPiecesEventListeners();
-      this.#blackCountdown = setInterval(
-        this.blackCounter.updateBlackCountdown.bind(this),
-        1000
-      );
-      clearInterval(this.#redCountdown);
-    }
-
+    this.changeTurn();
     this.checkIfWin();
   }
 
@@ -1506,17 +1176,25 @@ class Game extends UI {
     this.#cleanMemoryClick();
 
     if (
-      option.classList.contains("blackKingCell") &&
+      this.board.cells[option.getAttribute("data-n") - 1].createBlackKing &&
       pickedPiece.classList.contains("black")
     ) {
       pickedPiece.classList.add("blackKing");
-      option.hasKing = true;
+      pickedPiece.isBlackKing = true;
     } else if (
-      option.classList.contains("redKingCell") &&
+      this.board.cells[option.getAttribute("data-n") - 1].createRedKing &&
       pickedPiece.classList.contains("red")
     ) {
       pickedPiece.classList.add("redKing");
-      option.hasKing = true;
+      pickedPiece.isRedKing = true;
+    }
+  }
+
+  #updateAmountOfPieces() {
+    if (this.#turn) {
+      this.#redAmount--;
+    } else if (!this.#turn) {
+      this.#blackAmount--;
     }
   }
 
@@ -1560,12 +1238,21 @@ class Game extends UI {
     this.#cellsToMove = [];
     this.#cellsToJump = [];
     this.#cellsToClean = [];
-    this.#cellsToCheck = [];
-    this.#cellsToCheckKing = [];
+    this.#cellsToClean = [];
+    this.#cellsToCleanKing = [];
     this.#cellsToJumpKing = [];
     this.#cellsToKingJumpHelper = [];
     this.#cellsToKingMoveHelper = [];
+    this.#cellsToCleanMove = [];
     this.#sum = 0;
+  }
+
+  changeActivePlayerUI() {
+    if (this.#turn) {
+      this.players.blackTurn();
+    } else {
+      this.players.redTurn();
+    }
   }
 
   checkIfWin() {
@@ -1605,13 +1292,13 @@ class Game extends UI {
 
   #giveUpGame(e) {
     this.languageBtn.classList.add("languageButton--hidden");
-    if (e.target === this.flag1) {
+    if (e.target === this.players.flag1) {
       this.endGame();
       this.#winner = "black";
       this.english
         ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
         : (this.#endgameModalText.textContent = `${this.player1Name} WYGRYWA!`);
-    } else if (e.target === this.flag2) {
+    } else if (e.target === this.players.flag2) {
       this.endGame();
       this.#winner = "red";
       this.english
@@ -1628,17 +1315,15 @@ class Game extends UI {
     this.#cleanMemoryClick();
   }
 
-  #changeLanguage() {
+  changeLanguage() {
     console.log("click");
     this.english = !this.english;
-    this.#changeText();
+    this.changeText();
   }
 
-  #changeText() {
+  changeText() {
     if (this.english) {
-      this.#captureModalText.innerText =
-        "Capture is obligatory! Pieces with possible capture move are marked with blue color";
-      this.#captureModalBtn.innerText = "GOT IT!";
+      this.modalMustCapture.modalTextInEnglish();
       this.#starterBtn.innerText = "START GAME!";
       this.starterPlayer1.placeholder = "First player's name";
       this.starterPlayer2.placeholder = "Second player's name";
@@ -1651,9 +1336,7 @@ class Game extends UI {
         ? (this.#endgameModalText.textContent = `${this.player1Name} WINS!`)
         : (this.#endgameModalText.textContent = `${this.player2Name} WINS!`);
     } else {
-      this.#captureModalText.innerText =
-        "Bicie jest obowiązkowe! Piony, które mogą wykonać bicie zaznaczono na niebiesko";
-      this.#captureModalBtn.innerText = "OK!";
+      this.modalMustCapture.modalTextInPolish();
       this.#starterBtn.innerText = "ROZPOCZNIJ GRĘ!";
       this.starterPlayer1.placeholder = "Imię gracza nr 1";
       this.starterPlayer2.placeholder = "Imię gracza nr 2";

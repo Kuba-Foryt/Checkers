@@ -6,9 +6,10 @@ export class Cell extends UI {
     this.n = number;
     this.selector = `[data-n="${this.n}"]`;
     this.hasPiece = null;
-    this.hasKing = null;
     this.hasRed = null;
     this.hasBlack = null;
+    this.createRedKing = null;
+    this.createBlackKing = null;
     this.isBrown = false;
     this.element = null;
   }
