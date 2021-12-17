@@ -25,7 +25,10 @@ export class UI {
     endgameModal: "[data-endgame-modal]",
     endgameModalText: "[data-endgame-modal-header]",
     endgameLanguageBtn: "[data-endgame-modal-language-button]",
-    endgameModalBtn: "[data-endgame-modal-button]",
+    endgameModalAgainBtn: "[data-endgame-modal-again-button]",
+    endgameModalBoardBtn: "[data-endgame-modal-board-button]",
+    boardModal: "[data-board-modal]",
+    boardModalBtn: "[data-board-modal-button]",
   };
 
   getElement(selector) {

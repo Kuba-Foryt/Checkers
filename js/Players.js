@@ -1,7 +1,4 @@
 import { UI } from "./UI.js";
-import { Cell } from "./Cell.js";
-import { Piece } from "./Piece.js";
-import { Timer } from "./Timer.js";
 
 export class Players extends UI {
   redTimer = null;
@@ -12,7 +9,6 @@ export class Players extends UI {
   fas2 = null;
   flag1 = null;
   flag2 = null;
-  languageBtn = null;
 
   handleElements() {
     this.redTimer = this.getElement(this.UISelectors.counter1);
@@ -23,7 +19,6 @@ export class Players extends UI {
     this.fas2 = this.getElement(this.UISelectors.fas2);
     this.flag1 = this.getElement(this.UISelectors.flag1);
     this.flag2 = this.getElement(this.UISelectors.flag2);
-    this.languageBtn = this.getElement(this.UISelectors.languageBtn);
   }
 
   blackTurn() {
@@ -40,7 +35,19 @@ export class Players extends UI {
     this.flag2.classList.add("player2__fas--hidden");
   }
 
-  launchPlayers() {
+  hideFas() {
+    this.fas1.classList.add("player1__fas--hidden");
+    this.fas2.classList.add("player2__fas--hidden");
+    this.flag1.classList.add("player1__fas--hidden");
+    this.flag2.classList.add("player2__fas--hidden");
+  }
+
+  init() {
     this.handleElements();
   }
 }
+
+const players = new Players();
+players.init();
+
+export { players };

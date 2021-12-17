@@ -2,19 +2,41 @@ import { UI } from "./UI.js";
 import { Cell } from "./Cell.js";
 import { Piece } from "./Piece.js";
 
-export class Board extends UI {
+class Board extends UI {
   config = {
     number: 64,
     pieces: 24,
   };
 
-  board = null;
+  boardOfCells = null;
   cells = [];
   redPieces = [];
   blackPieces = [];
 
+  cellsToJump = [];
+  cellsToMove = [];
+  cellsToClean = [];
+
+  cellsToMoveHandler = null;
+  cellsToKingMoveHandler = null;
+  cellsToJumpHandler = null;
+
+  cellsToCleanKing = [];
+  cellsToJumpKing = [];
+  cellsToMoveKing = [];
+  cellsToCheckMove = [];
+
+  cellsToKingJumpHelper = [];
+  cellsToKingMoveHelper = [];
+
+  sum = 0;
+  pieceCanJump = [];
+  pieceCanMove = [0];
+
+  turn = true;
+
   handleElements() {
-    this.board = this.getElement(this.UISelectors.board);
+    this.boardOfCells = this.getElement(this.UISelectors.board);
   }
 
   generateCells() {
@@ -26,11 +48,11 @@ export class Board extends UI {
     }
   }
   renderBoard() {
-    while (this.board.firstChild) {
-      this.board.removeChild(this.board.lastChild);
+    while (this.boardOfCells.firstChild) {
+      this.boardOfCells.removeChild(this.boardOfCells.lastChild);
     }
     this.cells.forEach((cell) => {
-      this.board.insertAdjacentHTML("beforeend", cell.createElement());
+      this.boardOfCells.insertAdjacentHTML("beforeend", cell.createElement());
       cell.element = cell.getElement(cell.selector);
     });
   }
@@ -138,3 +160,7 @@ export class Board extends UI {
     this.renderRedPieces();
   }
 }
+
+const board = new Board();
+
+export { board };

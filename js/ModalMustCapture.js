@@ -1,3 +1,5 @@
+import { game } from "./Game.js";
+import { language } from "./Language.js";
 import { UI } from "./UI.js";
 
 export class ModalMustCapture extends UI {
@@ -5,7 +7,6 @@ export class ModalMustCapture extends UI {
   #captureModalText = null;
   #captureModalLanguageBtn = null;
   #captureModalBtn = null;
-  languageBtn = null;
 
   handleElements() {
     this.#captureModal = this.getElement(this.UISelectors.captureModal);
@@ -14,7 +15,9 @@ export class ModalMustCapture extends UI {
       this.UISelectors.captureModalLanguageBtn
     );
     this.#captureModalBtn = this.getElement(this.UISelectors.captureModalBtn);
-    this.languageBtn = this.getElement(this.UISelectors.languageBtn);
+    this.#captureModalLanguageBtn = this.getElement(
+      this.UISelectors.captureModalLanguageBtn
+    );
   }
 
   addEventListeners() {
@@ -22,12 +25,16 @@ export class ModalMustCapture extends UI {
       "click",
       this.hideCapturePopup.bind(this)
     );
+    this.#captureModalLanguageBtn.addEventListener(
+      "click",
+      language.changeLanguage
+    );
   }
 
   hideCapturePopup(e) {
     e.preventDefault();
     this.#captureModal.classList.add("mustCapture__modal--hidden");
-    this.languageBtn.classList.remove("languageButton--hidden");
+    language.showLanguageButton();
   }
 
   revealCaptureModalPopup() {
@@ -50,3 +57,8 @@ export class ModalMustCapture extends UI {
     this.handleElements();
   }
 }
+
+const modalMustCapture = new ModalMustCapture();
+modalMustCapture.init();
+
+export { modalMustCapture };
