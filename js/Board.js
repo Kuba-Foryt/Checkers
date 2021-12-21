@@ -47,10 +47,14 @@ class Board extends UI {
       this.cells.number++;
     }
   }
-  renderBoard() {
+
+  clearBoard() {
     while (this.boardOfCells.firstChild) {
       this.boardOfCells.removeChild(this.boardOfCells.lastChild);
     }
+  }
+
+  renderBoard() {
     this.cells.forEach((cell) => {
       this.boardOfCells.insertAdjacentHTML("beforeend", cell.createElement());
       cell.element = cell.getElement(cell.selector);
@@ -150,6 +154,7 @@ class Board extends UI {
 
   createBoard() {
     this.handleElements();
+    this.clearBoard();
     this.generateCells();
     this.renderBoard();
     this.colorBoard();

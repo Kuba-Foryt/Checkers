@@ -1,4 +1,3 @@
-import { game } from "./Game.js";
 import { language } from "./Language.js";
 import { UI } from "./UI.js";
 
@@ -27,7 +26,7 @@ export class ModalMustCapture extends UI {
     );
     this.#captureModalLanguageBtn.addEventListener(
       "click",
-      language.changeLanguage
+      language.changeLanguage.bind(language)
     );
   }
 

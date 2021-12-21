@@ -96,7 +96,6 @@ export class Timer extends UI {
       : this.player2Name;
     game.name2.innerHTML = this.player1Name;
     game.name1.innerHTML = this.player2Name;
-    console.log(this.player1Name, this.player2Name);
   }
 
   restartTimers() {

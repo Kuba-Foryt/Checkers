@@ -13,7 +13,7 @@ export class Language extends UI {
   }
 
   addEventListeners() {
-    this.languageBtn.addEventListener("click", language.changeLanguage);
+    this.languageBtn.addEventListener("click", this.changeLanguage.bind(this));
   }
 
   showLanguageButton() {
@@ -29,8 +29,8 @@ export class Language extends UI {
   }
 
   changeLanguage() {
-    language.english = !language.english;
-    language.changeText();
+    this.english = !this.english;
+    this.changeText();
   }
 
   changeText() {

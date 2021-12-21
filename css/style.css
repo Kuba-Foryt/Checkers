@@ -7,23 +7,21 @@
 
   --font-size: 2.2rem;
 
+  --selected-color: rgb(209, 233, 76);
   --possible-move-color: yellow;
   --possible-jump-color: rgb(75, 207, 75);
-  --piece-can-jump: rgb(13, 60, 214);
-
-  /* --game-max-width: calc(
-    var(--cell-size) * var(--cells-in-row) +
-      calc(2 * var(--game-padding) + calc(2 * var(--border-width)))
-  ); */
-  /* 
-  --game-max-width: calc(
-    var(--cell-size) * var(--cells-in-row) + calc(2 * (var(--border-width)))
-  ); */
+  --piece-can-jump-color: rgb(13, 60, 214);
+  --red-piece-color: red;
+  --red-box-shadow-piece-color: rgb(255, 70, 70);
+  --black-piece-color: rgb(45, 45, 45);
+  --black-box-shadow-piece-color: rgb(80, 80, 80);
+  --king-background-color: rgb(180, 180, 180);
 
   --game-max-width: calc(
     var(--cells-in-row) * (var(--cell-size)) + calc(20 * (var(--border-width)))
   );
 }
+
 *,
 *::after,
 *::before {
@@ -38,38 +36,13 @@ main {
   left: 0;
   width: 100%;
   height: 100%;
-
-  /* position: absolute; */
-  /* top: 20%;
-  left: 20%; */
   display: grid;
   grid-template-rows: 10rem auto 10rem;
   grid-template-areas:
     "header"
     "table"
     "footer";
-  /* grid-template-columns: 3rem 5fr 3rem;
-  grid-template-rows: 5rem auto 5rem;
-  grid-template-areas:
-    ". header ."
-    ". table ."
-    ". footer ."; */
-  /* grid-template-columns: 1fr 7fr 1fr;
-  grid-template-rows: 1fr 7fr 1fr;
-  grid-template-areas:
-    "timer1 header timer2"
-    "player1 table player2"
-    "nothin board nothin"
-    "footer1 footer2 footer3"; */
 }
-
-/* .title {
-  height: 5vh; 
-  grid-area: header; 
-  grid-column-start: 1;
-  grid-column-end: 4;
-  grid-row: 1;
-} */
 
 .languageButton,
 .starter__modal__languageButton,
@@ -92,36 +65,17 @@ main {
 }
 
 .table {
-  /* position: relative; */
-  /* top: 50%;
-  left: 50%; */
   grid-area: table;
   display: flex;
-  /* padding: 2rem 3rem 3rem 3rem; */
-  /* grid-column-start: 1;
-  grid-column-end: 4; */
-  /* grid-row: 2; */
-  /* grid-area: table; */
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
   perspective: 2000px;
   perspective-origin: center;
-  /* background-color: black; */
-  /* padding-top: 10vh; */
-  /* width: 100vh; */
-  /* height: 55vh; */
-  background-image: url(../assets/wood.jpg);
+  background-image: url(../assets/table.jpg);
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
-  /* z-index: -2; */
 }
 
-.fas {
-  font-size: var(--font-size);
-}
-
+.fas,
 .far {
   font-size: var(--font-size);
 }
@@ -132,7 +86,7 @@ main {
 }
 
 .player1__fas {
-  color: red;
+  color: var(--red-piece-color);
 }
 
 .player1__fas--hidden {
@@ -143,45 +97,32 @@ main {
   visibility: hidden;
 }
 
-.player1 {
+.player1,
+.player2 {
   grid-area: header;
   display: flex;
-  /* margin: 0 auto; */
   padding: 0.2rem;
   align-items: center;
   justify-content: center;
   flex-direction: row;
-  /* z-index: 1; */
   background-color: blanchedalmond;
-  /* font-size: 4rem; */
   text-align: center;
 }
 
 .player2 {
   grid-area: footer;
-  display: flex;
-  padding: 0.2rem;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  /* z-index: 1; */
-  background-color: blanchedalmond;
-  /* font-size: 35px; */
-  text-align: center;
 }
 
 .player1__name,
 .player2__name {
-  /* border: 0.3rem solid #000; */
   margin: 0 2rem 0 0.5rem;
   font-weight: 550;
-  /* align-items: flex-end; */
   padding: 0.3rem 0.3rem;
   font-size: var(--font-size);
 }
 
 .player1__name {
-  color: red;
+  color: var(--red-piece-color);
 }
 
 .player1__timer,
@@ -198,43 +139,25 @@ main {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-
-  /* grid-area: table; */
   transform: rotateX(30deg);
   margin: auto;
   width: var(--game-max-width);
-  /* max-width: 50vh; */
-  /* height: 50vh; */
-  /* padding: 10px; */
   border: 1rem solid transparent;
-  border-image: url(../assets/wood2.jpg) 5% round;
-  /* z-index: 1; */
-
+  border-image: url(../assets/border.jpg) 5% round;
   box-shadow: 0px 0px 0px 0.2rem rgb(50, 50, 50);
 }
 
 .cell {
   width: var(--cell-size);
   height: var(--cell-size);
+  border: var(--border-width) solid var(--black-box-shadow-piece-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: var(--border-width) solid rgb(80, 80, 80);
-  /* cursor: pointer; */
-  /* z-index: 10; */
 }
 
-/* .boardBottom {
-  grid-area: footer2;
-  margin: 0 auto;
-  /* width: 70vw; */
-/* max-width: 30rem; */
-/* height: 3vh; 
-  background-color: rgb(114, 87, 52);
-} */
-
 .brown {
-  background: url(../assets/wooden.jpg) center no-repeat;
+  background: url(../assets/brown.jpg) center no-repeat;
   background-size: 120%;
 }
 
@@ -246,45 +169,34 @@ main {
 .piece {
   width: var(--piece-size);
   height: var(--piece-size);
-  border: var(--border-width) solid rgb(80, 80, 80);
+  border: var(--border-width) solid var(--black-box-shadow-piece-color);
   border-radius: 100%;
   z-index: 2;
   cursor: pointer;
 }
 
 .red {
-  background-color: red;
-  /* outline: 0.05rem solid rgb(80, 80, 80);
-  outline-offset: -1rem; */
+  background-color: var(--red-piece-color);
   box-shadow: 0px 0px 0px 0.5rem rgb(255, 70, 70) inset;
 }
 
 .black {
-  background-color: rgb(45, 45, 45);
-  box-shadow: 0px 0px 0px 0.5rem rgb(80, 80, 80) inset;
+  background-color: var(--black-piece-color);
+  box-shadow: 0px 0px 0px 0.5rem var(--black-box-shadow-piece-color) inset;
 }
 
 .redKing {
-  background-color: rgb(180, 180, 180);
-  box-shadow: 0px 0px 0px 0.65rem red inset;
+  background-color: var(--king-background-color);
+  box-shadow: 0px 0px 0px 0.65rem var(--red-piece-color) inset;
 }
 
 .blackKing {
-  background-color: rgb(180, 180, 180);
-  box-shadow: 0px 0px 0px 0.65rem rgb(45, 45, 45) inset;
+  background-color: var(--king-background-color);
+  box-shadow: 0px 0px 0px 0.65rem var(--black-piece-color) inset;
 }
-/* .redKing {
-  background-color: red;
-  box-shadow: 0px 0px 0px 0.65rem rgb(180, 180, 180) inset;
-}
-
-.blackKing {
-  background-color: rgb(60, 60, 60);
-  box-shadow: 0px 0px 0px 0.65rem rgb(180, 180, 180) inset;
-} */
 
 .selected {
-  background-color: rgb(209, 233, 76);
+  background-color: var(--selected-color);
 }
 
 .possibleMove {
@@ -298,8 +210,8 @@ main {
 }
 
 .canJump {
-  background-color: var(--piece-can-jump);
-  box-shadow: 0px 0px 0px 0.5rem var(--piece-can-jump) inset;
+  background-color: var(--piece-can-jump-color);
+  box-shadow: 0px 0px 0px 0.5rem var(--piece-can-jump-color) inset;
 }
 
 .starter__modal,
@@ -412,19 +324,19 @@ main {
   }
 
   .red {
-    box-shadow: 0px 0px 0px 0.25rem rgb(255, 70, 70) inset;
+    box-shadow: 0px 0px 0px 0.25rem var(--red-box-shadow-piece-color) inset;
   }
 
   .black {
-    box-shadow: 0px 0px 0px 0.25rem rgb(80, 80, 80) inset;
+    box-shadow: 0px 0px 0px 0.25rem var(--black-box-shadow-piece-color) inset;
   }
 
   .redKing {
-    box-shadow: 0px 0px 0px 0.25rem red inset;
+    box-shadow: 0px 0px 0px 0.25rem var(--red-piece-color) inset;
   }
 
   .blackKing {
-    box-shadow: 0px 0px 0px 0.25rem rgb(45, 45, 45) inset;
+    box-shadow: 0px 0px 0px 0.25rem var(--black-piece-color) inset;
   }
 
   .starter__modal__content,
@@ -512,7 +424,7 @@ main {
 
   .starter__modal__input__player1,
   .starter__modal__input__player2 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .starter__modal__button,
@@ -529,13 +441,6 @@ main {
     right: 5%;
   }
 }
-
-/* @media (orientation: landscape) and (min-width: 568px) {
-  :root {
-    --cell-size: 2.4rem;
-    --font-size: 1.2rem;
-  }
-} */
 
 @media only screen and (min-width: 736px) {
   .starter__modal__content,
@@ -592,19 +497,18 @@ main {
   }
 
   .red {
-    box-shadow: 0px 0px 0px 0.3rem rgb(255, 70, 70) inset;
+    box-shadow: 0px 0px 0px 0.3rem var(--red-box-shadow-piece-color) inset;
   }
-
-  .black {
-    box-shadow: 0px 0px 0px 0.3rem rgb(80, 80, 80) inset;
+  rgb .black {
+    box-shadow: 0px 0px 0px 0.3rem var(--black-box-shadow-piece-color) inset;
   }
 
   .redKing {
-    box-shadow: 0px 0px 0px 0.3rem red inset;
+    box-shadow: 0px 0px 0px 0.3rem var(--red-piece-color) inset;
   }
 
   .blackKing {
-    box-shadow: 0px 0px 0px 0.3rem rgb(45, 45, 45) inset;
+    box-shadow: 0px 0px 0px 0.3rem var(--black-piece-color) inset;
   }
 }
 
@@ -624,19 +528,19 @@ main {
   }
 
   .red {
-    box-shadow: 0px 0px 0px 0.6rem rgb(255, 70, 70) inset;
+    box-shadow: 0px 0px 0px 0.6rem var(--red-box-shadow-piece-color) inset;
   }
 
   .black {
-    box-shadow: 0px 0px 0px 0.6rem rgb(80, 80, 80) inset;
+    box-shadow: 0px 0px 0px 0.6rem var(--black-box-shadow-piece-color) inset;
   }
 
   .redKing {
-    box-shadow: 0px 0px 0px 0.6rem red inset;
+    box-shadow: 0px 0px 0px 0.6rem var(--red-piece-color) inset;
   }
 
   .blackKing {
-    box-shadow: 0px 0px 0px 0.6rem rgb(45, 45, 45) inset;
+    box-shadow: 0px 0px 0px 0.6rem var(--black-piece-color) inset;
   }
 
   .languageButton,
@@ -663,22 +567,6 @@ main {
   .mustCapture__modal__text {
     font-size: 3rem;
   }
-
-  .red {
-    box-shadow: 0px 0px 0px 0.6rem rgb(255, 70, 70) inset;
-  }
-
-  .black {
-    box-shadow: 0px 0px 0px 0.6rem rgb(80, 80, 80) inset;
-  }
-
-  .redKing {
-    box-shadow: 0px 0px 0px 0.6rem red inset;
-  }
-
-  .blackKing {
-    box-shadow: 0px 0px 0px 0.6rem rgb(45, 45, 45) inset;
-  }
 }
 
 @media only screen and (min-width: 1600px) {
@@ -694,18 +582,18 @@ main {
   }
 
   .red {
-    box-shadow: 0px 0px 0px 0.85rem rgb(255, 70, 70) inset;
+    box-shadow: 0px 0px 0px 0.85rem var(--red-box-shadow-piece-color) inset;
   }
 
   .black {
-    box-shadow: 0px 0px 0px 0.85rem rgb(80, 80, 80) inset;
+    box-shadow: 0px 0px 0px 0.85rem var(--black-box-shadow-piece-color) inset;
   }
 
   .redKing {
-    box-shadow: 0px 0px 0px 0.85rem red inset;
+    box-shadow: 0px 0px 0px 0.85rem var(--red-piece-color) inset;
   }
 
   .blackKing {
-    box-shadow: 0px 0px 0px 0.85rem rgb(45, 45, 45) inset;
+    box-shadow: 0px 0px 0px 0.85rem var(--black-piece-color) inset;
   }
 }

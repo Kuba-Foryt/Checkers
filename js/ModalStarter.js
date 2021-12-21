@@ -24,7 +24,10 @@ class ModalStarter extends UI {
 
   addEventListeners() {
     this.starterBtn.addEventListener("click", game.startGame.bind(game));
-    this.starterLanguageBtn.addEventListener("click", language.changeLanguage);
+    this.starterLanguageBtn.addEventListener(
+      "click",
+      language.changeLanguage.bind(language)
+    );
   }
 
   hideModal() {

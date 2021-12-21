@@ -48,7 +48,6 @@ export class Game extends UI {
   blackCountdown = null;
 
   initializeGame() {
-    console.log(modalStarter.starterBtn);
     this.#handleElements();
     board.createBoard();
     this.#newGame();

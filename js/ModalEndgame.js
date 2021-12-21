@@ -39,7 +39,7 @@ export class ModalEndgame extends UI {
     );
     this.endgameModalLanguageBtn.addEventListener(
       "click",
-      language.changeLanguage
+      language.changeLanguage.bind(language)
     );
     this.endgameModalAgainBtn.addEventListener(
       "click",
