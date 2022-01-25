@@ -57,12 +57,23 @@ main {
   width: calc(var(--font-size) * 1.7);
   height: calc(var(--font-size) * 1.7);
   z-index: 5;
+  transition: all 0.4s ease;
+  transform: rotate(0);
 }
 
 .rulesButton {
   right: 5%;
   background: rgba(255, 255, 255, 1) url(../assets/info-circle-solid.svg);
   border-radius: 100%;
+}
+
+.rulesButton:hover {
+  background: rgba(255, 140, 80, 1) url(../assets/info-circle-solid.svg);
+}
+
+.languageButton:hover {
+  /* transform: rotate(12deg); */
+  transform: skew(-12deg);
 }
 
 .table {
