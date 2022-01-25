@@ -41,7 +41,7 @@ export class Timer extends UI {
     this.generateBlackTimer();
   }
 
-  updateRedCountdown() {
+  updateRedCountdown = () => {
     this.timeRed--;
     this.minutesRed = Math.floor(this.timeRed / 60);
     this.timeRed % 60 > 9
@@ -53,9 +53,9 @@ export class Timer extends UI {
       ? (this.redTimer.firstChild.style.color = "red")
       : (this.redTimer.firstChild.style.color = "black");
     game.checkIfWin();
-  }
+  };
 
-  updateBlackCountdown() {
+  updateBlackCountdown = () => {
     this.timeBlack--;
     this.minutesBlack = Math.floor(this.timeBlack / 60);
     this.timeBlack % 60 > 9
@@ -67,9 +67,9 @@ export class Timer extends UI {
       ? (this.blackTimer.firstChild.style.color = "red")
       : (this.blackTimer.firstChild.style.color = "black");
     game.checkIfWin();
-  }
+  };
 
-  renderTimers() {
+  renderTimers = () => {
     game.name1.innerHTML = "PLAYER 2";
     game.name2.innerHTML = "PLAYER 1";
     this.restartTimers();
@@ -79,9 +79,9 @@ export class Timer extends UI {
   : 0${this.secondsBlack}`;
     this.blackTimer.firstChild.style.color = "black";
     this.redTimer.firstChild.style.color = "black";
-  }
+  };
 
-  updateNames() {
+  updateNames = () => {
     this.player1Name = modalStarter.starterPlayer1.value.toUpperCase();
     !this.player1Name
       ? language.english
@@ -96,7 +96,7 @@ export class Timer extends UI {
       : this.player2Name;
     game.name2.innerHTML = this.player1Name;
     game.name1.innerHTML = this.player2Name;
-  }
+  };
 
   restartTimers() {
     this.timeRed = this.startingTime * 60;

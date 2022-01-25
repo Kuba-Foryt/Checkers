@@ -1,6 +1,5 @@
 import { UI } from "./UI.js";
 import { game } from "./Game.js";
-import { language } from "./Language.js";
 import { timer } from "./Timer.js";
 
 export class ModalEndgame extends UI {
@@ -8,7 +7,6 @@ export class ModalEndgame extends UI {
   endgameModalText = null;
   endgameModalAgainBtn = null;
   endgameModalBoardBtn = null;
-  endgameModalLanguageBtn = null;
   languageBtn = null;
 
   boardModal = null;
@@ -26,7 +24,6 @@ export class ModalEndgame extends UI {
     this.endgameModalLanguageBtn = this.getElement(
       this.UISelectors.endgameLanguageBtn
     );
-    this.languageBtn = this.getElement(this.UISelectors.languageBtn);
 
     this.boardModal = this.getElement(this.UISelectors.boardModal);
     this.boardModalBtn = this.getElement(this.UISelectors.boardModalBtn);
@@ -36,10 +33,6 @@ export class ModalEndgame extends UI {
     this.endgameModalBoardBtn.addEventListener(
       "click",
       this.#showBoard.bind(this)
-    );
-    this.endgameModalLanguageBtn.addEventListener(
-      "click",
-      language.changeLanguage.bind(language)
     );
     this.endgameModalAgainBtn.addEventListener(
       "click",

@@ -3,6 +3,7 @@ import { game } from "./Game.js";
 import { modalEndgame } from "./ModalEndgame.js";
 import { modalMustCapture } from "./ModalMustCapture.js";
 import { modalStarter } from "./ModalStarter.js";
+import { modalRules } from "./ModalRules.js";
 
 export class Language extends UI {
   english = true;
@@ -14,14 +15,6 @@ export class Language extends UI {
 
   addEventListeners() {
     this.languageBtn.addEventListener("click", this.changeLanguage.bind(this));
-  }
-
-  showLanguageButton() {
-    this.languageBtn.classList.remove("languageButton--hidden");
-  }
-
-  hideLanguageButton() {
-    this.languageBtn.classList.add("languageButton--hidden");
   }
 
   init() {
@@ -36,6 +29,7 @@ export class Language extends UI {
   changeText() {
     if (this.english) {
       modalMustCapture.modalTextInEnglish();
+      modalRules.modalTextInEnglish();
       modalStarter.starterBtn.innerText = "START GAME!";
       modalStarter.starterPlayer1.placeholder = "First player's name";
       modalStarter.starterPlayer2.placeholder = "Second player's name";
@@ -49,6 +43,7 @@ export class Language extends UI {
         : modalEndgame.player2WinsInEnglish();
     } else {
       modalMustCapture.modalTextInPolish();
+      modalRules.modalTextInPolish();
       modalStarter.starterBtn.innerText = "ROZPOCZNIJ GRĘ!";
       modalStarter.starterPlayer1.placeholder = "Imię gracza nr 1";
       modalStarter.starterPlayer2.placeholder = "Imię gracza nr 2";

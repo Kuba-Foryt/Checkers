@@ -31,7 +31,7 @@
 }
 
 main {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -45,11 +45,9 @@ main {
 }
 
 .languageButton,
-.starter__modal__languageButton,
-.mustCapture__modal__languageButton,
-.endgame__modal__languageButton {
+.rulesButton {
   cursor: pointer;
-  position: fixed;
+  position: absolute;
   top: 0%;
   right: 5%;
   margin-top: 0.5rem;
@@ -58,10 +56,13 @@ main {
   background-position: center;
   width: calc(var(--font-size) * 1.7);
   height: calc(var(--font-size) * 1.7);
+  z-index: 5;
 }
 
-.languageButton--hidden {
-  visibility: hidden;
+.rulesButton {
+  right: 5%;
+  background: rgba(255, 255, 255, 1) url(../assets/info-circle-solid.svg);
+  border-radius: 100%;
 }
 
 .table {
@@ -217,7 +218,8 @@ main {
 .starter__modal,
 .endgame__modal,
 .mustCapture__modal,
-.board__modal {
+.board__modal,
+.rules__modal {
   z-index: 1;
   position: fixed;
   top: 0;
@@ -237,7 +239,8 @@ main {
 
 .starter__modal__content,
 .endgame__modal__content,
-.mustCapture__modal__content {
+.mustCapture__modal__content,
+.rules__modal__content {
   width: 50vw;
   height: 50vh;
   background-color: #fff;
@@ -248,10 +251,20 @@ main {
 }
 
 .starter__modal__text,
-.endgame__modal__text {
+.endgame__modal__text,
+.rules__modal__text {
   font-size: 4.8rem;
   text-align: center;
   text-transform: uppercase;
+}
+
+.rules__modal__rule {
+  list-style: none;
+  width: 100%;
+  text-align: justify;
+  padding: 0 0.6rem;
+  text-transform: uppercase;
+  font-size: 0.72rem;
 }
 
 .mustCapture__modal__text {
@@ -277,7 +290,8 @@ main {
 
 .starter__modal__button,
 .mustCapture__modal__button,
-.endgame__modal__button {
+.endgame__modal__button,
+.rules__modal__button {
   cursor: pointer;
   background-color: transparent;
   color: #000;
@@ -291,7 +305,8 @@ main {
 
 .starter__modal__button:hover,
 .mustCapture__modal__button:hover,
-.endgame__modal__button:hover {
+.endgame__modal__button:hover,
+.rules__modal__button:hover {
   background-color: #000;
   color: #fff;
   border-color: #000;
@@ -300,7 +315,8 @@ main {
 .endgame__modal--hidden,
 .mustCapture__modal--hidden,
 .starter__modal--hidden,
-.board__modal--hidden {
+.board__modal--hidden,
+.rules__modal--hidden {
   visibility: hidden;
 }
 
@@ -341,7 +357,8 @@ main {
 
   .starter__modal__content,
   .mustCapture__modal__content,
-  .endgame__modal__content {
+  .endgame__modal__content,
+  .rules__modal__content {
     width: 100vw;
     height: 100vh;
   }
@@ -349,6 +366,10 @@ main {
   .starter__modal__text,
   .endgame__modal__text {
     font-size: 3.5rem;
+  }
+
+  .rules__modal__text {
+    font-size: 2rem;
   }
   .mustCapture__modal__text {
     font-size: 1.8rem;
@@ -365,21 +386,27 @@ main {
     font-size: 1.8rem;
   }
 
+  .rules__modal__button {
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+  }
+
   .languageButton,
-  .starter__modal__languageButton,
-  .mustCapture__modal__languageButton,
-  .endgame__modal__languageButton {
+  .rulesButton {
     width: calc(var(--font-size) * 2);
     height: calc(var(--font-size) * 2);
     left: 2.5%;
+  }
+
+  .languageButton {
+    left: auto;
+    right: 2.5%;
   }
 }
 
 @media only screen and (min-width: 360px) {
   .languageButton,
-  .starter__modal__languageButton,
-  .mustCapture__modal__languageButton,
-  .endgame__modal__languageButton {
+  .rulesButton {
     width: calc(var(--font-size) * 3.3);
     height: calc(var(--font-size) * 3.3);
   }
@@ -397,7 +424,8 @@ main {
 
   .starter__modal__content,
   .mustCapture__modal__content,
-  .endgame__modal__content {
+  .endgame__modal__content,
+  .rules__modal__content {
     width: 100vw;
     height: 100vh;
   }
@@ -418,7 +446,8 @@ main {
   }
 
   .starter__modal__text,
-  .endgame__modal__text {
+  .endgame__modal__text,
+  .rules__modal__text {
     font-size: 3.5rem;
   }
 
@@ -429,23 +458,17 @@ main {
 
   .starter__modal__button,
   .mustCapture__modal__button,
-  .endgame__modal__button {
+  .endgame__modal__button,
+  .rules__modal__button {
     font-size: 1.8rem;
-  }
-
-  .languageButton,
-  .starter__modal__languageButton,
-  .mustCapture__modal__languageButton,
-  .endgame__modal__languageButton {
-    left: auto;
-    right: 5%;
   }
 }
 
 @media only screen and (min-width: 736px) {
   .starter__modal__content,
   .mustCapture__modal__content,
-  .endgame__modal__content {
+  .endgame__modal__content,
+  .rules__modal__content {
     width: 100vw;
     height: 80vh;
   }
@@ -460,6 +483,10 @@ main {
     font-size: 3.5rem;
   }
 
+  .rules__modal__text {
+    font-size: 2.5rem;
+  }
+
   .starter__modal__input__player1,
   .starter__modal__input__player2 {
     font-size: 1.7rem;
@@ -467,17 +494,26 @@ main {
 
   .starter__modal__button,
   .mustCapture__modal__button,
-  .endgame__modal__button {
+  .endgame__modal__button,
+  .rules__modal__button {
     font-size: 2rem;
   }
 
   .languageButton,
-  .starter__modal__languageButton,
-  .mustCapture__modal__languageButton,
-  .endgame__modal__languageButton {
+  .rulesButton {
     width: calc(var(--font-size) * 3);
     height: calc(var(--font-size) * 3);
     right: 5%;
+  }
+
+  .languageButton {
+    left: auto;
+    right: 5%;
+  }
+
+  .rules__modal__button {
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
   }
 }
 
@@ -509,6 +545,18 @@ main {
 
   .blackKing {
     box-shadow: 0px 0px 0px 0.3rem var(--black-piece-color) inset;
+  }
+
+  .rules__modal__text {
+    font-size: 3.5rem;
+  }
+  .rules__modal__rule {
+    font-size: 1.4rem;
+  }
+
+  .rules__modal__button {
+    font-size: 2.5rem;
+    padding: 1rem 2rem;
   }
 }
 
@@ -544,9 +592,7 @@ main {
   }
 
   .languageButton,
-  .starter__modal__languageButton,
-  .mustCapture__modal__languageButton,
-  .endgame__modal__languageButton {
+  .rulesButton {
     width: calc(var(--font-size) * 2);
     height: calc(var(--font-size) * 2);
   }
@@ -555,7 +601,8 @@ main {
 @media only screen and (min-width: 1281px) {
   .starter__modal__content,
   .mustCapture__modal__content,
-  .endgame__modal__content {
+  .endgame__modal__content,
+  .rules__modal__content {
     width: 70vw;
     height: 70vh;
   }
@@ -572,7 +619,8 @@ main {
 @media only screen and (min-width: 1600px) {
   .starter__modal__content,
   .mustCapture__modal__content,
-  .endgame__modal__content {
+  .endgame__modal__content,
+  .rules__modal__content {
     width: 70vw;
     height: 70vh;
   }
@@ -595,5 +643,9 @@ main {
 
   .blackKing {
     box-shadow: 0px 0px 0px 0.85rem var(--black-piece-color) inset;
+  }
+
+  .rules__modal__rule {
+    font-size: 1.3rem;
   }
 }

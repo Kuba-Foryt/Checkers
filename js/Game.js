@@ -7,6 +7,7 @@ import { players } from "./Players.js";
 import { modalStarter } from "./ModalStarter.js";
 import { modalMustCapture } from "./ModalMustCapture.js";
 import { modalEndgame } from "./ModalEndgame.js";
+import { modalRules } from "./ModalRules.js";
 import { move } from "./Move.js";
 import { jump } from "./Jump.js";
 
@@ -68,16 +69,12 @@ export class Game extends UI {
   startGame(e) {
     e.preventDefault();
     // click.createCustomKings();
-    timer.updateNames.bind(timer)();
+    timer.updateNames();
     modalStarter.hideModal();
-    language.showLanguageButton();
     this.changeActivePlayerUI();
     this.#addBlackPiecesEventListeners();
     this.#addFlagsEventListeners();
-    this.blackCountdown = setInterval(
-      timer.updateBlackCountdown.bind(timer),
-      1000
-    );
+    this.blackCountdown = setInterval(timer.updateBlackCountdown, 1000);
   }
 
   restartGame(e) {
@@ -87,19 +84,16 @@ export class Game extends UI {
     this.#resetGameParams();
     timer.generateTimers();
     this.changeActivePlayerUI();
-    timer.renderTimers.bind(timer)();
-    timer.updateNames.bind(timer)();
+    timer.renderTimers();
+    timer.updateNames();
     modalEndgame.hideModal();
-    language.showLanguageButton();
     this.#addBlackPiecesEventListeners();
-    this.blackCountdown = setInterval(
-      timer.updateBlackCountdown.bind(timer),
-      1000
-    );
+    this.blackCountdown = setInterval(timer.updateBlackCountdown, 1000);
   }
 
   #addBtnsEventListeners() {
     modalStarter.addEventListeners();
+    modalRules.addEventListeners();
     language.addEventListeners();
     modalMustCapture.addEventListeners();
     modalEndgame.addEventListeners();
@@ -150,18 +144,12 @@ export class Game extends UI {
     if (this.turn) {
       this.turn = false;
       this.#addRedPiecesEventListeners();
-      this.redCountdown = setInterval(
-        timer.updateRedCountdown.bind(timer),
-        1000
-      );
+      this.redCountdown = setInterval(timer.updateRedCountdown, 1000);
       clearInterval(this.blackCountdown);
     } else if (!this.turn) {
       this.turn = true;
       this.#addBlackPiecesEventListeners();
-      this.blackCountdown = setInterval(
-        timer.updateBlackCountdown.bind(timer),
-        1000
-      );
+      this.blackCountdown = setInterval(timer.updateBlackCountdown, 1000);
       clearInterval(this.redCountdown);
     }
     this.changeActivePlayerUI();
@@ -181,7 +169,6 @@ export class Game extends UI {
   showPopup() {
     if (!this.#popup) {
       modalMustCapture.revealCaptureModalPopup();
-      language.hideLanguageButton();
       this.#popup = !this.#popup;
     }
   }
@@ -256,7 +243,6 @@ export class Game extends UI {
   }
 
   #giveUpGame(e) {
-    language.hideLanguageButton();
     if (e.target === players.flag1) {
       this.endGame();
       this.winner = "black";
@@ -273,10 +259,9 @@ export class Game extends UI {
   }
 
   endGame() {
-    this.#removePiecesEventListeners();
-    language.hideLanguageButton();
     clearInterval(this.blackCountdown);
     clearInterval(this.redCountdown);
+    this.#removePiecesEventListeners();
     click.cleanMemoryClick();
     players.hideFas();
     modalEndgame.showModal();

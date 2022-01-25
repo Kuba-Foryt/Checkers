@@ -1,22 +1,14 @@
-import { language } from "./Language.js";
 import { UI } from "./UI.js";
 
 export class ModalMustCapture extends UI {
   #captureModal = null;
   #captureModalText = null;
-  #captureModalLanguageBtn = null;
   #captureModalBtn = null;
 
   handleElements() {
     this.#captureModal = this.getElement(this.UISelectors.captureModal);
     this.#captureModalText = this.getElement(this.UISelectors.captureModalText);
-    this.#captureModalLanguageBtn = this.getElement(
-      this.UISelectors.captureModalLanguageBtn
-    );
     this.#captureModalBtn = this.getElement(this.UISelectors.captureModalBtn);
-    this.#captureModalLanguageBtn = this.getElement(
-      this.UISelectors.captureModalLanguageBtn
-    );
   }
 
   addEventListeners() {
@@ -24,16 +16,11 @@ export class ModalMustCapture extends UI {
       "click",
       this.hideCapturePopup.bind(this)
     );
-    this.#captureModalLanguageBtn.addEventListener(
-      "click",
-      language.changeLanguage.bind(language)
-    );
   }
 
   hideCapturePopup(e) {
     e.preventDefault();
     this.#captureModal.classList.add("mustCapture__modal--hidden");
-    language.showLanguageButton();
   }
 
   revealCaptureModalPopup() {
