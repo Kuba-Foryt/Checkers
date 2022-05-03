@@ -58,7 +58,7 @@ class ModalRules extends UI {
     this.#rulesModalRule6.innerText =
       "If a man moves into the kings row and continues to capture pieces, it doesn't become king";
     this.#rulesModalRule7.innerText =
-      "Game ends when all enemy's pieces are eliminated, time for game passes, enemy can't make a move or he/she surrenders";
+      "Game ends when all enemy's pieces are eliminated, time for game passes, enemy can't make a move or he/she surrenders by clicking on white flag";
     this.#rulesModalBtn.innerText = "GOT IT!";
   }
 
@@ -77,7 +77,7 @@ class ModalRules extends UI {
     this.#rulesModalRule6.innerText =
       "Jeżeli pion dociera do królewskiego rzędu po stronie przeciwnika i kontynuuje bicie w tej samej turze, nie staje się damką";
     this.#rulesModalRule7.innerText =
-      "Gra kończy się gdy zostaną wyeliminowane wszystkie piony przeciwnika, czas na grę minie, przeciwnik nie ma ruchu lub się poddał";
+      "Gra kończy się gdy zostaną wyeliminowane wszystkie piony przeciwnika, czas na grę minie, przeciwnik nie ma ruchu lub poddał się  poprzez kliknięcie w białą flagę";
     this.#rulesModalBtn.innerText = "OK!";
   }
 

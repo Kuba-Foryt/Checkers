@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/style.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/solid.min.css"
@@ -26,6 +25,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link rel="stylesheet" href="css/style.css" />
     <title>Checkers</title>
   </head>
   <body>
@@ -35,8 +35,8 @@
           class="player1__fas fas fa-angle-double-right player1-fas"
           data-fas1
         ></i>
-        <section class="player1__name" data-name1></section>
-        <section class="player1__timer" data-counter1></section>
+        <div class="player1__name" data-name1></div>
+        <div class="player1__timer" data-counter1></div>
         <i class="far fa-flag" data-flag1></i>
       </section>
       <article class="table">
@@ -44,8 +44,8 @@
       </article>
       <section class="player2">
         <i class="player2__fas fas fa-angle-double-right" data-fas2></i>
-        <section class="player2__name" data-name2></section>
-        <section class="player2__timer" data-counter2></section>
+        <div class="player2__name" data-name2></div>
+        <div class="player2__timer" data-counter2></div>
         <i class="far fa-flag" data-flag2></i>
       </section>
       <div class="languageButton" data-language-button></div>
@@ -54,42 +54,112 @@
     <article class="starter__modal" data-starter-modal>
       <section class="starter__modal__content">
         <h2 class="starter__modal__text" data-starter-modal-header>CHECKERS</h2>
-        <section class="starter__modal__form__container" data-starter-modal-container>
+        <div
+          class="starter__modal__form__container"
+          data-starter-modal-container
+        >
           <form class="starter__modal__form">
-          <input class="starter__modal__input__player1" data-starter-player1 type="text" placeholder="First player's name">
-          <input class="starter__modal__input__player2" data-starter-player2 type="text" placeholder="Second player's name">
-        </section> 
-        <button class="starter__modal__button" data-starter-modal-button>START GAME!</button>
+            <input
+              class="starter__modal__input__player1"
+              data-starter-player1
+              type="text"
+              placeholder="First player's name"
+            />
+            <input
+              class="starter__modal__input__player2"
+              data-starter-player2
+              type="text"
+              placeholder="Second player's name"
+            />
+          </form>
+        </div>
+        <button class="starter__modal__button" data-starter-modal-button>
+          START GAME!
+        </button>
       </section>
     </article>
     <article class="endgame__modal endgame__modal--hidden" data-endgame-modal>
       <section class="endgame__modal__content">
         <h2 class="endgame__modal__text" data-endgame-modal-header></h2>
-        <div class="endgame__modal__buttons__container" data-endgame-modal-buttons-container>
-          <button class="endgame__modal__button" data-endgame-modal-again-button>PLAY AGAIN!</button>
-          <button class="endgame__modal__button" data-endgame-modal-board-button>SHOW BOARD</button>
+        <div
+          class="endgame__modal__buttons__container"
+          data-endgame-modal-buttons-container
+        >
+          <button
+            class="endgame__modal__button"
+            data-endgame-modal-again-button
+          >
+            PLAY AGAIN!
+          </button>
+          <button
+            class="endgame__modal__button"
+            data-endgame-modal-board-button
+          >
+            SHOW BOARD
+          </button>
         </div>
       </section>
     </article>
-    <article class="board__modal board__modal--hidden" data-board-modal></article>
-    <article class="mustCapture__modal mustCapture__modal--hidden" data-capture-modal>
+    <article
+      class="board__modal board__modal--hidden"
+      data-board-modal
+    ></article>
+    <article
+      class="mustCapture__modal mustCapture__modal--hidden"
+      data-capture-modal
+    >
       <section class="mustCapture__modal__content">
         <h2 class="mustCapture__modal__text" data-capture-modal-text>
-          Capture is obligatory! Pieces with possible capture move are marked with blue color</h2>
-        <button class="mustCapture__modal__button" data-capture-modal-button>GOT IT!</button>
+          Capture is obligatory! Pieces with possible capture move are marked
+          with blue color
+        </h2>
+        <button class="mustCapture__modal__button" data-capture-modal-button>
+          GOT IT!
+        </button>
       </section>
     </article>
     <article class="rules__modal rules__modal--hidden" data-rules-modal>
       <ul class="rules__modal__content">
         <h2 class="rules__modal__text" data-rules-modal-header>Game rules</h2>
-        <li class="rules__modal__rule" data-rules-modal-rule1>The player with the black pieces makes the first move. The two players make moves alternately</li>
-        <li class="rules__modal__rule" data-rules-modal-rule2>Ordinary pieces move forward one square diagonally to a square that is not occupied by another piece and capture an opponent's piece by moving two consecutive steps forwards or backwards in the same line, jumping over the piece on the first step</li>
-        <li class="rules__modal__rule" data-rules-modal-rule3>Multiple enemy pieces can be captured in a single turn provided by successive jumps made by a single piece. The jumps do not need to be in the same line and may "zigzag"</li>
-        <li class="rules__modal__rule" data-rules-modal-rule4>Jumping is always mandatory: if a player has the option to jump, he/she must take it, even if doing so results in disadvantage for the jumping player</li>
-        <li class="rules__modal__rule" data-rules-modal-rule5>If a man moves into the last row on the opponent's side of the board, it is crowned as a king and gains the ability to move any distance along unblocked diagonals, and may capture an opposing man any distance away by jumping to any of the unoccupied squares immediately beyond it</li>
-        <li class="rules__modal__rule" data-rules-modal-rule6>If a man moves into the kings row and continues to capture pieces, it doesn't become king</li>
-        <li class="rules__modal__rule" data-rules-modal-rule7>Game ends when all enemy's pieces are eliminated, time for game passes, enemy can't make a move or he/she surrenders</li>
-        <button class="rules__modal__button" data-rules-modal-button>GOT IT!</button>
+        <li class="rules__modal__rule" data-rules-modal-rule1>
+          The player with the black pieces makes the first move. The two players
+          make moves alternately
+        </li>
+        <li class="rules__modal__rule" data-rules-modal-rule2>
+          Ordinary pieces move forward one square diagonally to a square that is
+          not occupied by another piece and capture an opponent's piece by
+          moving two consecutive steps forwards or backwards in the same line,
+          jumping over the piece on the first step
+        </li>
+        <li class="rules__modal__rule" data-rules-modal-rule3>
+          Multiple enemy pieces can be captured in a single turn provided by
+          successive jumps made by a single piece. The jumps do not need to be
+          in the same line and may "zigzag"
+        </li>
+        <li class="rules__modal__rule" data-rules-modal-rule4>
+          Jumping is always mandatory: if a player has the option to jump,
+          he/she must take it, even if doing so results in disadvantage for the
+          jumping player
+        </li>
+        <li class="rules__modal__rule" data-rules-modal-rule5>
+          If a man moves into the last row on the opponent's side of the board,
+          it is crowned as a king and gains the ability to move any distance
+          along unblocked diagonals, and may capture an opposing man any
+          distance away by jumping to any of the unoccupied squares immediately
+          beyond it
+        </li>
+        <li class="rules__modal__rule" data-rules-modal-rule6>
+          If a man moves into the kings row and continues to capture pieces, it
+          doesn't become king
+        </li>
+        <li class="rules__modal__rule" data-rules-modal-rule7>
+          Game ends when all enemy's pieces are eliminated, time for game
+          passes, enemy can't make a move or he/she surrenders by clicking on
+          white flag
+        </li>
+        <button class="rules__modal__button" data-rules-modal-button>
+          GOT IT!
+        </button>
       </ul>
     </article>
     <script type="module" src="./js/Game.js"></script>
