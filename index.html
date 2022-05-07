@@ -119,48 +119,50 @@
       </section>
     </article>
     <article class="rules__modal rules__modal--hidden" data-rules-modal>
-      <ul class="rules__modal__content">
+      <section class="rules__modal__content">
         <h2 class="rules__modal__text" data-rules-modal-header>Game rules</h2>
-        <li class="rules__modal__rule" data-rules-modal-rule1>
-          The player with the black pieces makes the first move. The two players
-          make moves alternately
-        </li>
-        <li class="rules__modal__rule" data-rules-modal-rule2>
-          Ordinary pieces move forward one square diagonally to a square that is
-          not occupied by another piece and capture an opponent's piece by
-          moving two consecutive steps forwards or backwards in the same line,
-          jumping over the piece on the first step
-        </li>
-        <li class="rules__modal__rule" data-rules-modal-rule3>
-          Multiple enemy pieces can be captured in a single turn provided by
-          successive jumps made by a single piece. The jumps do not need to be
-          in the same line and may "zigzag"
-        </li>
-        <li class="rules__modal__rule" data-rules-modal-rule4>
-          Jumping is always mandatory: if a player has the option to jump,
-          he/she must take it, even if doing so results in disadvantage for the
-          jumping player
-        </li>
-        <li class="rules__modal__rule" data-rules-modal-rule5>
-          If a man moves into the last row on the opponent's side of the board,
-          it is crowned as a king and gains the ability to move any distance
-          along unblocked diagonals, and may capture an opposing man any
-          distance away by jumping to any of the unoccupied squares immediately
-          beyond it
-        </li>
-        <li class="rules__modal__rule" data-rules-modal-rule6>
-          If a man moves into the kings row and continues to capture pieces, it
-          doesn't become king
-        </li>
-        <li class="rules__modal__rule" data-rules-modal-rule7>
-          Game ends when all enemy's pieces are eliminated, time for game
-          passes, enemy can't make a move or he/she surrenders by clicking on
-          white flag
-        </li>
+        <ul class="rules__modal__list">
+          <li class="rules__modal__rule" data-rules-modal-rule1>
+            The player with the black pieces makes the first move. The two
+            players make moves alternately
+          </li>
+          <li class="rules__modal__rule" data-rules-modal-rule2>
+            Ordinary pieces move forward one square diagonally to a square that
+            is not occupied by another piece and capture an opponent's piece by
+            moving two consecutive steps forwards or backwards in the same line,
+            jumping over the piece on the first step
+          </li>
+          <li class="rules__modal__rule" data-rules-modal-rule3>
+            Multiple enemy pieces can be captured in a single turn provided by
+            successive jumps made by a single piece. The jumps do not need to be
+            in the same line and may "zigzag"
+          </li>
+          <li class="rules__modal__rule" data-rules-modal-rule4>
+            Jumping is always mandatory: if a player has the option to jump,
+            he/she must take it, even if doing so results in disadvantage for
+            the jumping player
+          </li>
+          <li class="rules__modal__rule" data-rules-modal-rule5>
+            If a man moves into the last row on the opponent's side of the
+            board, it is crowned as a king and gains the ability to move any
+            distance along unblocked diagonals, and may capture an opposing man
+            any distance away by jumping to any of the unoccupied squares
+            immediately beyond it
+          </li>
+          <li class="rules__modal__rule" data-rules-modal-rule6>
+            If a man moves into the kings row and continues to capture pieces,
+            it doesn't become king
+          </li>
+          <li class="rules__modal__rule" data-rules-modal-rule7>
+            Game ends when all enemy's pieces are eliminated, time for game
+            passes, enemy can't make a move or he/she surrenders by clicking on
+            white flag
+          </li>
+        </ul>
         <button class="rules__modal__button" data-rules-modal-button>
           GOT IT!
         </button>
-      </ul>
+      </section>
     </article>
     <script type="module" src="./js/Game.js"></script>
   </body>
