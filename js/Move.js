@@ -28,6 +28,7 @@ class Move {
         }
       }
     }
+    console.log(board.pieceCanMove);
   }
 
   #checkPossibleMoveHandler(index) {

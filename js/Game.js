@@ -24,8 +24,6 @@ export class Game extends UI {
 
   redPieces = [];
   blackPieces = [];
-  #pieceCanJump = [];
-  #pieceCanMove = [0];
 
   black = [];
   red = [];
@@ -156,6 +154,7 @@ export class Game extends UI {
     jump.checkIfAnyJumpIsPossible();
     move.checkIfAnyMoveIsPossible();
     this.#endGameIfThereIsNoPossibleMove();
+    // console.log(board.cellsToJump, board.cellsToMove);
   }
 
   changeActivePlayerUI() {
@@ -223,15 +222,15 @@ export class Game extends UI {
   }
 
   #endGameIfThereIsNoPossibleMove() {
-    if (!this.#pieceCanMove.length && !this.#pieceCanJump.length && this.turn) {
+    if (!board.pieceCanMove.length && !board.pieceCanJump.length && this.turn) {
       this.endGame();
       this.winner = "red";
       language.english
         ? modalEndgame.noMovePlayer2WinsInEnglish()
         : modalEndgame.noMovePlayer2WinsInPolish();
     } else if (
-      !this.#pieceCanMove.length &&
-      !this.#pieceCanJump.length &&
+      !board.pieceCanMove.length &&
+      !board.pieceCanJump.length &&
       !this.turn
     ) {
       this.endGame();

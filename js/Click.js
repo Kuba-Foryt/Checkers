@@ -2,7 +2,6 @@ import { UI } from "./UI.js";
 import { game } from "./Game.js";
 import { board } from "./Board.js";
 import { selectedPiece } from "./SelectedPiece.js";
-import { move } from "./Move.js";
 import { jump } from "./Jump.js";
 import { kingJump } from "./KingJump.js";
 
